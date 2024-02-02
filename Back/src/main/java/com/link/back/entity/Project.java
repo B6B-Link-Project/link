@@ -79,9 +79,8 @@ public class Project {
 		this.deployUrl = deployUrl;
 	}
 
-	public void updateProjectDetail(String projectName, String projectDesc,
+	public void updateProjectDetail(String projectDesc,
 		String projectUrl, String deployUrl, ProjectImage projectImage) {
-		this.projectName = projectName;
 		this.projectDesc = projectDesc;
 		this.projectUrl = projectUrl;
 		this.deployUrl = deployUrl;

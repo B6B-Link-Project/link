@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.link.back.dto.request.ProjectRequestDto;
 import com.link.back.dto.response.BackPerformanceResponseDto;
+import com.link.back.dto.response.ProjectDetailResponseDto;
 import com.link.back.dto.response.ProjectResponseDto;
 import com.link.back.infra.rabbitmq.RabbitPublisher;
 import com.link.back.openfeign.dto.Contribution;
@@ -70,8 +71,8 @@ public class ProjectController {
 	@GetMapping
 	public ResponseEntity<Page<ProjectResponseDto>> getAllProjects(Pageable pageable) {
 		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		Page<ProjectResponseDto> projects = projectService.getAllClosedProjects(userId, pageable);
-		return new ResponseEntity<>(projects, HttpStatus.OK);
+		Page<ProjectResponseDto> allClosedProjects = projectService.getAllClosedProjects(userId, pageable);
+		return new ResponseEntity<>(allClosedProjects, HttpStatus.OK);
 	}
 
 	@GetMapping("/my-project")
@@ -82,9 +83,9 @@ public class ProjectController {
 	}
 
 	@GetMapping("/{project_id}")
-	public ResponseEntity<ProjectResponseDto> getProjectDetail(@PathVariable("project_id") Long projectId) {
+	public ResponseEntity<ProjectDetailResponseDto> getProjectDetail(@PathVariable("project_id") Long projectId) {
 		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		ProjectResponseDto projectDetail = projectService.getProjectDetail(userId, projectId);
+		ProjectDetailResponseDto projectDetail = projectService.getProjectDetail(userId, projectId);
 		return new ResponseEntity<>(projectDetail, HttpStatus.OK);
 	}
 

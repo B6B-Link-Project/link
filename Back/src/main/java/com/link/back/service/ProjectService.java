@@ -5,6 +5,7 @@ package com.link.back.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
@@ -13,9 +14,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.link.back.dto.ProjectImageDto;
 import com.link.back.dto.request.ProjectRequestDto;
+import com.link.back.dto.response.ProjectDetailResponseDto;
 import com.link.back.dto.response.ProjectResponseDto;
 import com.link.back.entity.Project;
 import com.link.back.entity.ProjectImage;
@@ -50,12 +53,17 @@ public class ProjectService {
 	private final ProjectLikeRepository projectLikeRepository;
 	private final UserRepository userRepository;
 
+	@Transactional
 	public void createProject(ProjectRequestDto projectRequestDto) {
 		Team team = teamRepository.getReferenceById(projectRequestDto.teamId());
 		ProjectImage projectImage = null;
 		if (projectRequestDto.projectImage() != null) {
 			projectImage = createProjectImageEntity(projectRequestDto.projectImage());
 			projectImageRepository.save(projectImage);
+		}
+		if (teamRepository.findById(projectRequestDto.teamId()).isPresent()) {
+			// TODO: 예외 처리 필요 - 이미 프로젝트를 생성한 팀의 경우
+			throw new RuntimeException();
 		}
 		Project project = createProjectEntity(team, projectImage, projectRequestDto);
 		Project save = projectRepository.save(project);
@@ -106,14 +114,23 @@ public class ProjectService {
 			.toList();
 	}
 
-	public ProjectResponseDto getProjectDetail(Long userId, Long projectId) {
+	public ProjectDetailResponseDto getProjectDetail(Long userId, Long projectId) {
 		User user = userId != null ? userRepository.getReferenceById(userId) : null;
 		Project project = projectRepository.findById(projectId).orElseThrow();
-		return toProjectResponseDto(project, user);
+		// TODO: 종료되지 않은 경우 내 프로젝트만 조회 가능하도록 예외 처리
+		return toProjectDetailResponseDto(project, user);
 	}
 
 	public void updateProject(Long projectId, ProjectRequestDto projectRequestDto) {
 		Project project = projectRepository.findById(projectId).orElseThrow();
+		Team team = teamRepository.findById(projectRequestDto.teamId()).orElseThrow();
+
+		// TODO: 내가 소유한 프로젝트인지 확인하고 예외 처리
+
+		if (!project.getTeam().getTeamId().equals(team.getTeamId())) {
+			throw new RuntimeException();
+		}
+
 		ProjectImage projectImage = null;
 		if (projectRequestDto.projectImage() != null) {
 			projectImage = createProjectImageEntity(projectRequestDto.projectImage());
@@ -137,26 +154,23 @@ public class ProjectService {
 		User user = userRepository.getReferenceById(userId);
 		Project project = projectRepository.getReferenceById(projectId);
 		Optional<ProjectLike> projectLikeOptional = projectLikeRepository.findByProjectAndUser(project, user);
-		if (projectLikeOptional.isEmpty()) {
-			ProjectLike newProjectLike = ProjectLike.builder()
-				.user(user)
-				.project(project)
-				.build();
-			projectLikeRepository.save(newProjectLike);
-		} else {
-			throw new RuntimeException(); // FIXME: 예외 처리 필요
-		}
+		if (projectLikeOptional.isPresent())
+			throw new RuntimeException("이미 클릭한 좋아요입니다."); // FIXME: 예외 처리 필요
+		ProjectLike newProjectLike = ProjectLike.builder()
+			.user(user)
+			.project(project)
+			.build();
+		projectLikeRepository.save(newProjectLike);
 	}
 
 	public void unregisterLike(Long userId, Long projectId) {
 		User user = userRepository.getReferenceById(userId);
 		Project project = projectRepository.getReferenceById(projectId);
 		Optional<ProjectLike> projectLikeOptional = projectLikeRepository.findByProjectAndUser(project, user);
-		if (projectLikeOptional.isPresent()) {
-			projectLikeRepository.delete(projectLikeOptional.get());
-		} else {
-			throw new RuntimeException(); // FIXME: 예외 처리 필요
+		if (projectLikeOptional.isEmpty()) {
+			throw new RuntimeException("존재하지 않는 좋아요 입니다."); // FIXME: 예외 처리 필요
 		}
+		projectLikeRepository.delete(projectLikeOptional.get());
 	}
 
 	public List<ProjectResponseDto> getLikedProjects(Long userId) {
@@ -164,9 +178,19 @@ public class ProjectService {
 		List<Project> projects = projectRepository.findLikedProjectsByUser(user);
 		return projects.stream().map(p -> toProjectResponseDto(p, user)).toList();
 	}
-
 	private ProjectResponseDto toProjectResponseDto(Project project, User user) {
 		return ProjectResponseDto.builder()
+			.projectId(project.getProjectId())
+			.projectName(project.getProjectName())
+			.projectDesc(project.getProjectDesc())
+			.starCount(projectLikeRepository.countByProject(project))
+			.starred(projectLikeRepository.findByProjectAndUser(project, user).isPresent())
+			.imgSrc(project.getProjectImage() == null ? null : project.getProjectImage().getProjectImageUrl())
+			.build();
+	}
+
+	private ProjectDetailResponseDto toProjectDetailResponseDto(Project project, User user) {
+		return ProjectDetailResponseDto.builder()
 			.projectId(project.getProjectId())
 			.teamId(project.getTeam().getTeamId())
 			.hackathonId(project.getTeam().getHackathon().getHackathonId())
@@ -180,10 +204,7 @@ public class ProjectService {
 			.projectUrl(project.getProjectUrl())
 			.deployUrl(project.getDeployUrl())
 			.winState(project.getWinState())
-			.projectImage(
-				project.getProjectImage() == null ? null :
-					toProjectImageDto(project.getProjectImage())
-			)
+			.imsSrc(project.getProjectImage() == null ? null : project.getProjectImage().getProjectImageUrl())
 			.starCount(projectLikeRepository.countByProject(project))
 			.starred(projectLikeRepository.findByProjectAndUser(project, user).isPresent())
 			.build();
@@ -214,7 +235,6 @@ public class ProjectService {
 
 	private void updateProjectEntity(Project project, ProjectImage projectImage, ProjectRequestDto projectRequestDto) {
 		project.updateProjectDetail(
-			projectRequestDto.projectName(),
 			projectRequestDto.projectDesc(),
 			projectRequestDto.projectUrl(),
 			projectRequestDto.deployUrl(),
