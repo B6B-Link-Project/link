@@ -47,7 +47,7 @@ function suggestInterview(modal:number) {
     <template v-if="refUser?.content">
       <template v-for="(data, i) in refUser?.content">
         <Modal v-if="interviewModal===i+1" @closeModal="interviewModalClose">
-          <ModalInterview/>
+          <ModalInterview :user-id="data.userId"/>
         </Modal>
         <Modal v-if="clickedModal===i+1" @closeModal="handleModalClose">
           <ModalMember :userInfo="data" :user-id="data.userId">

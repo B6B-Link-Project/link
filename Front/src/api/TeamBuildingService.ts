@@ -5,7 +5,10 @@ import {SkillCategoryResponseDto} from "@/dto/tmpDTOs/SkillTypeDTO.ts";
 import {RecruitTeamDTO} from "@/dto/tmpDTOs/RecruitTeamDTO.ts";
 import {AppliedTeamDTO} from "@/dto/tmpDTOs/AppliedTeamDTO.ts";
 import {TeamResponseDto} from "@/dto/tmpDTOs/teamDTO.ts";
+<<<<<<< Front/src/api/TeamBuildingService.ts
+=======
 import {MemberDetailResponseDto} from "@/dto/tmpDTOs/memberDTO.ts";
+>>>>>>> Front/src/api/TeamBuildingService.ts
 
 const apiService = new ApiService();
 
@@ -43,8 +46,8 @@ class TeamBuildingService {
     }
 
     @CatchError
-    async getSuggestedTeam(): Promise<AppliedTeamDTO | undefined> {
-        return (await apiService.getData(true, `${url}/teams/suggested`)).data as AppliedTeamDTO;
+    async getSuggestedTeam(teamId: number): Promise<AppliedTeamDTO | undefined> {
+        return (await apiService.getData(true, `${url}/teams/suggested?teamId=${teamId}`)).data as AppliedTeamDTO;
     }
 
     @CatchError
@@ -56,6 +59,12 @@ class TeamBuildingService {
     @CatchError
     async getAllSkillType(): Promise<SkillCategoryResponseDto> {
         const response = await apiService.getData(true, `${url}/skill`);
+        return response.data;
+    }
+
+    @CatchError
+    async getTeam(teamId: number): Promise<TeamResponseDto> {
+        const response = await apiService.getData(false, `${url}/teams/${teamId}`);
         return response.data;
     }
 
@@ -95,7 +104,6 @@ class TeamBuildingService {
         const response = await apiService.getData(false, `${url}/teams/recruit/detail/${userId}`);
         return response.data;
     }
-
 }
 
 export {

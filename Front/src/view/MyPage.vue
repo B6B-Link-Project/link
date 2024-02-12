@@ -67,7 +67,7 @@ function updateId(teamId: number) {
 <!--          <div class="remove-button">신청 취소</div>-->
 <!--        </div>-->
       </MyPageRecruitTeamInfo>
-      <MyPageRecruitTeamInfo1 v-else-if="mode===2" :teamId="refTeamId">
+      <MyPageRecruitTeamInfo1 v-else-if="mode===2" :team-id="refTeamId">
         <div class="title-container">
           <h1>권유받은 팀</h1>
           <div class="accept-button" @click="acceptSuggestion(refTeamId)">수락</div>
@@ -125,10 +125,10 @@ function updateId(teamId: number) {
       </tr>
     </table>
   </div>
-  <div :class="{'select':mode==2}">
+  <div v-if="mode==2">
     <ul>
-      <li v-for="teamId in refTeamIds">
-        <router-link to="/myPage?mode=2" @click="updateId(teamId)">{{ teamId }}</router-link>
+      <li v-for="(teamId, i) in refTeamIds">
+        <router-link to="/myPage?mode=2" :class="{'select':teamId==refTeamId}" @click="updateId(teamId)">{{ teamId }}</router-link>
       </li>
     </ul>
   </div>

@@ -7,6 +7,7 @@ import ModalMember from "@/components/Modal/ModalMember.vue";
 import ModalButton from "@/components/Modal/ModalButton.vue";
 import Modal from "@/components/Modal/Modal.vue";
 import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
+import {TeamService} from "@/api/TeamService.ts";
 
 const clickedModal = ref<Number>();
 
@@ -24,10 +25,13 @@ const handleModalClose2 = (num: number) => {
   clickedModal2.value = num;
 }
 const teamBuildingService = new TeamBuildingService();
+const teamService = new TeamService();
 const refTeam: Ref<RecruitTeamDTO | undefined> = ref();
+const refTeamId = ref<number>(0);
 
 onMounted(async () => {
   refTeam.value = await teamBuildingService.getRecruitTeam();
+  refTeamId.value = (await teamService.getActiveTeamId()).id;
   isLeader.value = await teamBuildingService.getIsLeader();
 })
 
@@ -42,7 +46,6 @@ const refuseApply = (userId: number) => {
 }
 
 const isLeader = ref<Boolean>();
-
 
 </script>
 
@@ -62,7 +65,7 @@ const isLeader = ref<Boolean>();
             <Modal v-if="clickedModal===i+1" @closeModal="handleModalClose">
               <ModalMember :userInfo="data">
                 <template v-if="isLeader">
-                  <ModalButton button-text="추방하기"/>
+                  <ModalButton button-text="추방하기" @click="teamService.deleteMember(data.userId)"/>
                 </template>
               </ModalMember>
             </Modal>
@@ -73,10 +76,10 @@ const isLeader = ref<Boolean>();
     </div>
     <div class="fx1">
       <h2>신청한 사용자</h2>
-
       <div class="list">
         <template v-if="refTeam?.members['APPLIED']">
           <template v-for="(data, i) in refTeam?.members['APPLIED']">
+<!--            <Modal v-if="clickedModal===i+1" @closeModal="handleModalClose">-->
             <Modal v-if="clickedModal1===i+1" @closeModal="handleModalClose1">
               <ModalMember :userInfo="data">
                 <template v-if="isLeader">
@@ -100,7 +103,7 @@ const isLeader = ref<Boolean>();
               <ModalMember :userInfo="data">
                 <template v-if="isLeader">
                   <ModalButton button-text="면접 예약"/>
-                  <ModalButton button-text="권유 취소"/>
+                  <ModalButton button-text="권유 취소" @click="teamService.deleteSuggestionByTeam(refTeamId, data.userId)"/>
                 </template>
               </ModalMember>
             </Modal>

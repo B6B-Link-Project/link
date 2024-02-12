@@ -15,16 +15,16 @@ const props = defineProps({
     default:0
   }
 })
-// function getTeamInfo() {
-//   const teamService = new TeamService();
-// }
+async function getTeamInfo() {
+  // refTeam.value = await teamBuildingService.getTeam(props.teamId);
+  refTeam.value = await teamBuildingService.getSuggestedTeam(props.teamId);
+}
 
 onMounted(async () => {
-  refTeam.value = await teamBuildingService.getSuggestedTeam();
+  await getTeamInfo();
   console.log(refTeam.value);
-  // getTeamInfo()
 })
-// watch(() => props.teamId, getTeamInfo, { immediate: true });
+watch(() => props.teamId, getTeamInfo, { immediate: true });
 </script>
 
 <template>

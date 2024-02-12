@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import DatePicker from 'vue3-datepicker';
+import {TeamService} from "@/api/TeamService.ts";
+
+const props = defineProps({
+  userId: {
+    type: Number,
+    default: 0
+  }
+})
 
 const as = ref<Boolean>(false);
 const clicked = (bool: boolean) => {
@@ -9,6 +17,13 @@ const clicked = (bool: boolean) => {
 
 const selectedDate = ref(new Date());
 const selectedTime = ref(-1);
+
+const teamService = new TeamService();
+
+async function suggest() {
+  const teamId = (await teamService.getActiveTeamId()).id;
+  await teamService.postSuggestionByTeam(teamId, props.userId);
+}
 
 const selectTime = (num: number) => {
   if (selectedTime.value === num) {
@@ -45,7 +60,7 @@ const selectTime = (num: number) => {
       </div>
     </div>
     <div class="button-container">
-      <div class="button w">
+      <div class="button w" @click="suggest">
         면접 없이 권유하기
       </div>
       <div class="button p">
