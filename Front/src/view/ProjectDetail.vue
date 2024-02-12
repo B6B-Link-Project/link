@@ -11,34 +11,38 @@ import ProjectStore from "@/store/projectStorage.ts";
 import {ProjectService} from "@/api/ProjectService.ts";
 import {useRoute} from "vue-router";
 import router from "@/router";
+import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
+import {TeamMemberResponseDto, TeamSkillDto} from "@/dto/tmpDTOs/teamDTO.ts";
+import {SkillType} from "@/dto/tmpDTOs/commonDTO.ts";
+
+
+interface TeamRefs {
+  skillsRef: Ref<TeamSkillDto[]>
+  membersRef: Ref<TeamMemberResponseDto[]>
+  skillsMapRef: Ref<Map<SkillType, TeamSkillDto[]>>
+}
 
 const route = useRoute();
 
-
-// TODO: 팀 아이디로 스킬셋 목록 가져오는 요청 필요
-const dummySkillList: SkillDTO[] = [];
-const dummySkill: SkillDTO = Builder<SkillDTO>()
-    .skillId(1)
-    .skillName("JavaScript")
-    .skillImgUrl("https://images.velog.io/images/mokyoungg/post/6659a8e8-5234-49e5-b3da-a3816c08bfdc/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%20%EB%A1%9C%EA%B3%A0.svg").build();
-
-for (let i = 0; i < 4; i++) {
-  dummySkillList.push(dummySkill);
+const teamBuildingService: TeamBuildingService = new TeamBuildingService();
+const teamRefs: TeamRefs = {
+  skillsRef: ref([]),
+  membersRef: ref([]),
+  skillsMapRef: ref(new Map<SkillType, TeamSkillDto[]>()),
 }
 
-const dummy: SkillCategory = Builder<SkillCategory>()
-    .categoryName("백엔드")
-    .skillList(dummySkillList)
-    .build();
-
-const dummyList: SkillCategory[] = [];
-for (let i = 0; i < 3; i++) {
-  dummyList.push(dummy);
+const initTeamRefs = async (teamId: number) => {
+  const teamResponseDto = await teamBuildingService.getTeamDetailByTeamId(teamId);
+  teamRefs.skillsRef.value = teamResponseDto?.teamSkills;
+  teamRefs.membersRef.value = teamResponseDto.members;
+  const m = teamRefs.skillsMapRef.value;
+  teamRefs.skillsRef.value.map((teamSkillDto) => {
+    const t = teamSkillDto.skillType;
+    if (!m.has(t))
+      m.set(t, []);
+    m.get(t)?.push(teamSkillDto);
+  });
 }
-dummyList.push(Builder<SkillCategory>()
-    .categoryName("프론트엔드")
-    .skillList(dummySkillList)
-    .build())
 
 const projectService: ProjectService = ProjectStore.getters.getProjectService;
 const projectDetail: Ref<ProjectDetailDto> = ref({} as ProjectDetailDto);
@@ -69,6 +73,7 @@ const init = async () => {
   projectRequestDto.projectDesc = projectDetail.value.projectDesc;
   projectRequestDto.projectUrl = projectDetail.value.projectUrl;
   projectRequestDto.deployUrl = projectDetail.value.deployUrl
+  await initTeamRefs(projectDetail.value.teamId);
 }
 
 // FIXME: 내 프로젝트가 하나도 없을 경우 처리 필요
@@ -94,17 +99,22 @@ const isLeader = ref(false);
     <div class="side-container">
       <div>
         <h1>기술스택</h1>
-        <div v-for="data in dummyList" class="stack-container">
-          <h2>{{ data.categoryName }}</h2>
+        <div v-for="[key, value] in teamRefs.skillsMapRef?.value" class="stack-container">
+          <h2>{{ key }}</h2>
           <div class="skill-list-container">
-            <div v-for="skill in data.skillList">
-              <SkillIcon :skill="skill" width="28px" height="28px" radius="3px" style="border-bottom: 1px solid"/>
+            <div v-for="skill in value">
+              <SkillIcon
+                  :skill="Builder<SkillDTO>()
+                  .skillName(skill.skillName)
+                  .skillType(skill.skillType)
+                  .skillImgUrl(skill.skillImageUrl)
+                  .build()" height="28px" radius="3px" style="border-bottom: 1px solid" width="28px"/>
             </div>
           </div>
         </div>
       </div>
       <!-- TODO: 프로젝트 팀 아이디 넘겨서 팀 목록 호출하기 -->
-      <ProjectTeam/>
+      <ProjectTeam :team-member-dtos="teamRefs.membersRef.value"/>
     </div>
   </div>
 </template>

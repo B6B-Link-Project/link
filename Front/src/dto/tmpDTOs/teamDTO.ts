@@ -1,6 +1,7 @@
 //@ts-nocheck
 import {HackathonInfoResponseDto} from "@/dto/hackathonInfoDTO.ts";
 import {SkillResponseDto} from "@/dto/skillDTO.ts";
+import {Role, SkillType} from "@/dto/tmpDTOs/commonDTO.ts";
 
 export interface CreateTeamRequestDto {
     teamName: string;
@@ -38,6 +39,7 @@ export interface TeamMemberResponseDto {
     introduce: string;
     userImageUrl: string;
     userOriginImageName: string;
+    role: Role;
     skillSets: SkillResponseDto[];
 }
 
@@ -52,4 +54,5 @@ export interface TeamResponseDto {
 export interface TeamSkillDto {
     skillName: string;
     skillImageUrl: string;
+    skillType: SkillType;
 }

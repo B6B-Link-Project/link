@@ -8,12 +8,9 @@ import {
     ProjectRequestDto
 } from "@/dto/projectDTO.ts";
 import {Builder} from "builder-pattern";
-import projectStorage from "@/store/projectStorage.ts";
 import {AxiosResponse} from "axios";
 import {BackPerformanceMessageResponseDto} from "@/dto/BackPerformanceMessageResponseDto.ts";
 import {CatchError} from "@/util/error.ts";
-// import store from "@/store";
-// import {CatchError} from "@/util/error.ts";
 
 const apiService = new ApiService();
 
@@ -40,31 +37,25 @@ class ProjectService {
             .build();
     }
 
-    async starClick(data: ProjectInfoDTO, projectId: number) {
-        if (data.starred) {
-            await projectStorage.getters.getProjectService.unlikeProject(projectId);
-            data.starCount--;
-            data.starred = false;
-        } else {
-            await projectStorage.getters.getProjectService.likeProject(projectId);
-            data.starCount++;
-            data.starred = true;
-        }
-    }
-
     // 전송 관련 메서드들
 
     async getALlProjects(pageNumber: number | undefined, pageSize: number | undefined): Promise<PageableProjects> {
         try {
-            const response = await apiService.getData(false, `${url}`,
-                {
-                    params: {
-                        page: pageNumber,
-                        size: pageSize
-                    }
-                });
-            if (response && response.status === httpStatusCode.OK) {
-                return this.toPageableProjects(response);
+            const newUrl = `${url}`;
+            const params = {
+                page: pageNumber,
+                size: pageSize
+            }
+            try {
+                const response = await apiService.getData(true, newUrl, {params});
+                if (response && response.status === httpStatusCode.OK) {
+                    return this.toPageableProjects(response);
+                }
+            } catch (error) {
+                const response = await apiService.getData(false, newUrl, {params});
+                if (response && response.status === httpStatusCode.OK) {
+                    return this.toPageableProjects(response);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -86,14 +77,21 @@ class ProjectService {
 
     async getPopularProjects(pageNumber: number | undefined, pageSize: number | undefined): Promise<PageableProjects> {
         try {
-            const response = await apiService.getData(false, `${url}/popular`, {
-                params: {
-                    page: pageNumber,
-                    size: pageSize
+            const newUrl = `${url}/popular`;
+            const params = {
+                page: pageNumber,
+                size: pageSize
+            }
+            try {
+                const response = await apiService.getData(true, newUrl, {params});
+                if (response && response.status === httpStatusCode.OK) {
+                    return this.toPageableProjects(response);
                 }
-            });
-            if (response && response.status === httpStatusCode.OK) {
-                return this.toPageableProjects(response);
+            } catch (error) {
+                const response = await apiService.getData(false, newUrl, {params});
+                if (response && response.status === httpStatusCode.OK) {
+                    return this.toPageableProjects(response);
+                }
             }
         } catch (error) {
             console.error(error);

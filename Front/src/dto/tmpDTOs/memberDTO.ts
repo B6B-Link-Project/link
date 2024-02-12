@@ -1,5 +1,5 @@
 import {Field, Role} from "@/dto/tmpDTOs/commonDTO.ts";
-import {SkillDto, SkillResponseDto} from "@/dto/tmpDTOs/skillDTO.ts";
+import {SkillDtoT, SkillResponseDto} from "@/dto/tmpDTOs/skillDTO.ts";
 
 export interface MemberDetailResponseDto {
     userId: number;
@@ -11,7 +11,7 @@ export interface MemberDetailResponseDto {
     field: Field;
     profileOriginImageName: string;
     profileImageURL: string;
-    skillSets: SkillDto[];
+    skillSets: SkillDtoT[];
 }
 
 

@@ -1,8 +1,7 @@
 package com.link.back.repository;
 
-import java.awt.print.Pageable;
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -10,17 +9,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.link.back.entity.User;
 import com.link.back.dto.RankingDTO;
+import com.link.back.entity.User;
+
 import feign.Param;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
 
 	@Query("select user from User user"
-		+ " join fetch UserSkill us"
-		+ " join fetch Skill s"
-		+ " join fetch UserImage ui"
+		+ " join fetch UserSkill us on us.user = user"
+		+ " join fetch Skill s on us.skill = s"
+		+ " join fetch UserImage ui on user.userImage = ui"
 		+ " where user.userId = :userId")
 	User findUserInfoById(@Param("userId") Long userId);
 

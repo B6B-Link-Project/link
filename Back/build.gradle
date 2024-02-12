@@ -37,6 +37,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 
+    implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.29.0'
+
     implementation group: 'io.codef.api', name: 'easycodef-java', version: '1.0.5'
 
     implementation 'com.auth0:java-jwt:4.4.0'

@@ -11,6 +11,7 @@ import {MypageConditionDTO} from "@/dto/tmpDTOs/MypageConditionDTO.ts";
 import {TeamService} from "@/api/TeamService.ts";
 import MyPageRecruitTeamInfo1 from "@/components/MyPage/MyPageRecruitTeamInfo1.vue";
 
+const teamService = new TeamService();
 const myPageService = new MyPageService();
 const refMyPageCond: Ref<MypageConditionDTO | undefined> = ref();
 const route = useRoute();
@@ -19,26 +20,25 @@ const refTeamIds = ref<number[]>();
 const refTeamNames = ref<string[]>();
 const refTeamId = ref<number>(0);
 
+const initTeamRefs = async () => {
+  const response = await getTeams();
+  refTeamIds.value = response.ids;
+  refTeamNames.value = response.names;
+  refTeamId.value = refTeamIds.value[0];
+}
+
 onMounted(async () => {
   refMyPageCond.value = await myPageService.getMyPageCond();
-  console.log(refMyPageCond.value)
-  refTeamIds.value = (await getTeams()).ids;
-  refTeamNames.value = (await getTeams()).names;
-  refTeamId.value = refTeamIds.value[0];
 })
 
 const updatePageFromQuery = async () => {
   const queryParam = route.query.mode;
   mode.value = parseInt(queryParam as string);
-  refTeamIds.value = (await getTeams()).ids;
-  refTeamNames.value = (await getTeams()).names;
-  refTeamId.value = refTeamIds.value[0];
   if (isNaN(mode.value)) mode.value = 0;
+  await initTeamRefs();
 };
 
 watch([() => route.fullPath], updatePageFromQuery, {immediate: true});
-
-const teamService = new TeamService();
 
 async function getTeams() {
   return await teamService.getBuildingTeamIds();

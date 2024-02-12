@@ -127,7 +127,6 @@ public class ProjectService {
 
 	@Transactional
 	public void updateProject(Long projectId, ProjectRequestDto projectRequestDto, MultipartFile image) {
-		// TODO: 프로젝트 이미지 받아와서 업로드
 		Project project = projectRepository.findById(projectId).orElseThrow();
 		ProjectImage projectImage = uploadImage(image);
 		if (projectImage == null && project.getProjectImage() != null) { // 기존 이미지 삭제
@@ -172,8 +171,6 @@ public class ProjectService {
 				.project(project)
 				.build();
 			projectLikeRepository.save(newProjectLike);
-		} else {
-			throw new RuntimeException(); // FIXME: 예외 처리 필요
 		}
 	}
 
@@ -182,11 +179,7 @@ public class ProjectService {
 		User user = userRepository.getReferenceById(userId);
 		Project project = projectRepository.getReferenceById(projectId);
 		Optional<ProjectLike> projectLikeOptional = projectLikeRepository.findByProjectAndUser(project, user);
-		if (projectLikeOptional.isPresent()) {
-			projectLikeRepository.delete(projectLikeOptional.get());
-		} else {
-			throw new RuntimeException(); // FIXME: 예외 처리 필요
-		}
+		projectLikeOptional.ifPresent(projectLikeRepository::delete);
 	}
 
 	public Page<ProjectResponseDto> getLikedProjects(Long userId, Pageable pageable) {

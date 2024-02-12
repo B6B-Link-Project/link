@@ -1,17 +1,48 @@
 <script setup lang="ts">
 import SimpleUser from "@/components/User/SimpleUser.vue";
+import {onMounted, PropType, Ref, ref, watch} from "vue";
+import {TeamMemberResponseDto} from "@/dto/tmpDTOs/teamDTO.ts";
 import {Builder} from "builder-pattern";
 
-const leader: SimpleUserDTO = Builder<SimpleUserDTO>()
-    .userId(1)
-    .userImgUrl("https://i.namu.wiki/i/yVEttFa1u45vMA2qpwpP3y4lrMMq1nTRoiA1tgw14rK_5LHezLYrZcrOd3NzsN7FT5weKoF3cba5y9ygP81JKQ.webp")
-    .introduce("안녕하세요. 고죠입니다.")
-    .userName("고죠 사토루").build()
+const prop = defineProps({
+  teamMemberDtos: {
+    required: true,
+    type: Object as PropType<TeamMemberResponseDto[]>
+  }
+});
 
-const member: SimpleUserDTO[] = [];
-for (let i = 0; i < 5; i++) {
-  member.push(leader);
-}
+// const leader: SimpleUserDTO = Builder<SimpleUserDTO>()
+//     .userId(1)
+//     .userImgUrl("https://i.namu.wiki/i/yVEttFa1u45vMA2qpwpP3y4lrMMq1nTRoiA1tgw14rK_5LHezLYrZcrOd3NzsN7FT5weKoF3cba5y9ygP81JKQ.webp")
+//     .introduce("안녕하세요. 고죠입니다.")
+//     .userName("고죠 사토루").build()
+
+const leader: Ref<SimpleUserDTO> = ref({} as SimpleUserDTO);
+const members: Ref<SimpleUserDTO[]> = ref([]);
+
+onMounted(() => {
+  watch(() => prop.teamMemberDtos, () => {
+    prop.teamMemberDtos.map((m) => {
+      console.log(m);
+      if (m.role === "LEADER") {
+        leader.value = Builder<SimpleUserDTO>()
+            .userId(m.userId)
+            .userName(m.name)
+            .introduce(m.introduce)
+            .userImgUrl(m.userImageUrl)
+            .build();
+      } else if (m.role === "MEMBER") {
+        members.value.push(Builder<SimpleUserDTO>()
+            .userId(m.userId)
+            .userName(m.name)
+            .introduce(m.introduce)
+            .userImgUrl(m.userImageUrl)
+            .build());
+      }
+    })
+  })
+})
+
 </script>
 
 <template>
@@ -22,7 +53,7 @@ for (let i = 0; i < 5; i++) {
       <SimpleUser :data="leader"/>
     </div>
     <h1>팀원</h1>
-    <div v-for="m in member">
+    <div v-for="m in members">
       <div style="border-bottom: #ccc 1px solid">
         <SimpleUser :data="m"/>
       </div>

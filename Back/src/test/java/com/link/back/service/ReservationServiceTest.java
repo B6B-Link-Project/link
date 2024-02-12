@@ -165,7 +165,7 @@ class ReservationServiceTest {
 		reservationRepository.save(reservation);
 
 		// when
-		reservationService.deleteMyReservation(reservation.getReservationId(), user1.getUserId());
+		reservationService.deleteReservation(reservation.getReservationId());
 
 		// then
 		assertTrue(reservationRepository.findById(reservation.getReservationId()).isEmpty());

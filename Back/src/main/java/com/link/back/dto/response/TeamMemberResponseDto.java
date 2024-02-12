@@ -3,9 +3,7 @@ package com.link.back.dto.response;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.link.back.entity.MemberStatus;
 import com.link.back.entity.User;
 import com.link.back.entity.UserTeam;
 

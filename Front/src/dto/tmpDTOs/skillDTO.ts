@@ -11,6 +11,13 @@ export interface SkillDto {
     skillLevel: number;
 }
 
+export interface SkillDtoT {
+    skillName: string;
+    skillImageUrl: string;
+    skillLevel: number;
+    skillType: string;
+}
+
 export interface SkillResponseDto {
     skillName: string;
     skillImageUrl: string;

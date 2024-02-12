@@ -1,8 +1,16 @@
 <script lang="ts" setup>
 
+defineProps({
+  gitUrl: {
+    type: String,
+    default: "https://github.com/",
+  }
+});
+
 </script>
 
 <template>
+  <!-- TODO: 깃 링크 연동 -->
   <div class="git-button">
     <div style="display: flex; background: #262626;   border-radius: 5px; padding-right: 10px">
       <svg fill="none" height="28" viewBox="0 0 28 28" width="28" xmlns="http://www.w3.org/2000/svg"

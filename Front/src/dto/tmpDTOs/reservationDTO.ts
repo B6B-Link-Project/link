@@ -4,17 +4,17 @@ export interface ReservationRequest {
 }
 
 export interface ScheduleRequest {
-    times: Date[];
+    times: String[];
 }
 
 export interface ReservationResponse {
     reservationId: number;
     userId: number;
     isLeader: boolean;
-    reservationDatetime: Date;
+    reservationDatetime: string;
 }
 
 export interface ScheduleResponse {
     userId: number;
-    times: Date[];
+    times: string[];
 }

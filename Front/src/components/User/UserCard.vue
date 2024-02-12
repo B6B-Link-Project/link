@@ -21,14 +21,17 @@ const shortEncoding = (text: string, cut: number): string => {
     else
       return text
 }
-</script>
 
+const userInfo = props.userInfo;
+
+</script>
 <template>
   <div :class="{'t':!props.t}" class="user-card">
     <img alt="" v-bind:src="userInfo.profileImageURL">
     <div class="text-container">
       <div class="info-text">
-        {{ userInfo.name }}
+
+      {{ userInfo.name }}
         <Tier :rating="userInfo.rating" font-size="14px" height="16px" style="margin-left: 8px" width="28px"></Tier>
       </div>
       <div class="introduce-text">
@@ -37,7 +40,7 @@ const shortEncoding = (text: string, cut: number): string => {
         </template>
       </div>
       <div style="display: flex; gap:4px; flex: 1">
-        <template v-for="data in userInfo.skillSets.slice(0,8)">
+        <template v-for="data in userInfo.skillSets?.slice(0,8)">
           <SkillIcon :skill="
           Builder<SkillDTO>().skillType(data.skillType)
           .skillYear(data.skillLevel)

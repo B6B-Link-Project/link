@@ -6,11 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.link.back.dto.request.ScheduleRequest;
 import com.link.back.dto.response.ScheduleResponse;
+import com.link.back.security.JwtTokenProvider;
 import com.link.back.service.ScheduleService;
 
 import jakarta.validation.constraints.NotNull;
@@ -21,11 +23,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/schedules")
 public class ScheduleController {
 	private final ScheduleService scheduleService;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@GetMapping
-	public ResponseEntity<ScheduleResponse> getMySchedule() {
-		Long userId = 1L; // 테스트용, 토큰 헤더에서 자신의 userId 가져올 예정
-		ScheduleResponse scheduleResponse = scheduleService.getScheduleByUserId(userId);
+	public ResponseEntity<ScheduleResponse> getMySchedule(@RequestHeader(value = "Authorization", required = true) String token) {
+		Long myUserId = this.getUserIdFromToken(token);
+		ScheduleResponse scheduleResponse = scheduleService.getScheduleByUserId(myUserId);
 		return new ResponseEntity<>(scheduleResponse, HttpStatus.OK);
 	}
 
@@ -36,9 +39,16 @@ public class ScheduleController {
 	}
 
 	@PutMapping
-	public ScheduleResponse updateMySchedule(@RequestBody @NotNull ScheduleRequest scheduleRequest) {
-		Long userId = 1L;
-		return scheduleService.updateMySchedule(userId, scheduleRequest);
+	public ScheduleResponse updateMySchedule(
+		@RequestHeader(value = "Authorization", required = true) String token,
+		@RequestBody @NotNull ScheduleRequest scheduleRequest) {
+		Long myUserId = this.getUserIdFromToken(token);
+		return scheduleService.updateMySchedule(myUserId, scheduleRequest);
+	}
+
+	private Long getUserIdFromToken(String token) {
+		if (token == null) return null;
+		return jwtTokenProvider.getUserId(token);
 	}
 
 }

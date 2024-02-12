@@ -14,7 +14,17 @@ const props = defineProps({
   }
 });
 
-const starClick = projectService.starClick;
+const starClick = async (data: ProjectInfoDTO, projectId: number) => {
+  if (data.starred) {
+    await projectService.unlikeProject(projectId);
+    data.starCount--;
+    data.starred = false;
+  } else {
+    await projectService.likeProject(projectId);
+    data.starCount++;
+    data.starred = true;
+  }
+};
 
 const toProjectDetail = (id: number) => {
   router.push({name: 'projectDetailById', params: {id: id}})

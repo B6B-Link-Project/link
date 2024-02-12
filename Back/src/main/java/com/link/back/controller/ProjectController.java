@@ -31,6 +31,7 @@ import com.link.back.dto.response.ProjectDetailResponseDto;
 import com.link.back.dto.response.ProjectResponseDto;
 import com.link.back.infra.rabbitmq.RabbitPublisher;
 import com.link.back.openfeign.dto.Contribution;
+import com.link.back.security.JwtTokenProvider;
 import com.link.back.service.BackPerformanceService;
 import com.link.back.service.ProjectContributionService;
 import com.link.back.service.ProjectService;
@@ -50,6 +51,7 @@ public class ProjectController {
 	private final ProjectContributionService projectContributionService;
 	private final ProjectService projectService;
 	private final BackPerformanceService backPerformanceService;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@Value("${GIT_PERSONAL_TOKEN}")
 	private String gitAuthorization;
@@ -83,41 +85,41 @@ public class ProjectController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<ProjectResponseDto>> getAllProjects(Pageable pageable) {
-		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		Page<ProjectResponseDto> allClosedProjects = projectService.getAllClosedProjects(userId, pageable);
+	public ResponseEntity<Page<ProjectResponseDto>> getAllProjects(
+		@RequestHeader(value = "Authorization", required = false) String token, Pageable pageable) {
+		Long myUserId = this.getUserIdFromToken(token);
+		Page<ProjectResponseDto> allClosedProjects = projectService.getAllClosedProjects(myUserId, pageable);
 		return new ResponseEntity<>(allClosedProjects, HttpStatus.OK);
 	}
 
 	@GetMapping("/my-project")
-	public ResponseEntity<Page<ProjectResponseDto>> getMyProject(Pageable pageable) {
-		Long myUserId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
+	public ResponseEntity<Page<ProjectResponseDto>> getMyProject(
+		@RequestHeader(value = "Authorization", required = true) String token, Pageable pageable) {
+		Long myUserId = this.getUserIdFromToken(token);
 		Page<ProjectResponseDto> myProjects = projectService.getMyProjects(myUserId, pageable);
 		return new ResponseEntity<>(myProjects, HttpStatus.OK);
 	}
 
 	@GetMapping("/{project_id}")
-	public ResponseEntity<ProjectDetailResponseDto> getProjectDetail(@PathVariable("project_id") Long projectId) {
-		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		ProjectDetailResponseDto projectDetail = projectService.getProjectDetail(userId, projectId);
+	public ResponseEntity<ProjectDetailResponseDto> getProjectDetail(
+		@RequestHeader(value = "Authorization", required = false) String token,
+		@PathVariable("project_id") Long projectId) {
+		Long myUserId = this.getUserIdFromToken(token);
+		ProjectDetailResponseDto projectDetail = projectService.getProjectDetail(myUserId, projectId);
 		return new ResponseEntity<>(projectDetail, HttpStatus.OK);
 	}
 
 	@PostMapping
-	public ResponseEntity<?> postProject(
-		@RequestPart(value = "project") @NotNull ProjectRequestDto projectRequestDto,
-		@RequestPart(value = "image") MultipartFile image
-	) {
+	public ResponseEntity<?> postProject(@RequestPart(value = "project") @NotNull ProjectRequestDto projectRequestDto,
+		@RequestPart(value = "image") MultipartFile image) {
 		projectService.createProject(projectRequestDto, image);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PutMapping("/{project_id}")
-	public ResponseEntity<?> putProject(
-		@PathVariable("project_id") Long projectId,
+	public ResponseEntity<?> putProject(@PathVariable("project_id") Long projectId,
 		@RequestPart(value = "project") @NotNull ProjectRequestDto projectRequestDto,
-		@RequestPart(value = "image") MultipartFile image
-		) {
+		@RequestPart(value = "image") MultipartFile image) {
 		projectService.updateProject(projectId, projectRequestDto, image);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
@@ -136,33 +138,57 @@ public class ProjectController {
 
 	@PostMapping("/{project_id}/like")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public ResponseEntity<?> postProjectLike(@PathVariable("project_id") Long projectId) {
-		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		projectService.registerLike(userId, projectId);
+	public ResponseEntity<?> postProjectLike(@RequestHeader(value = "Authorization", required = true) String token,
+		@PathVariable("project_id") Long projectId) {
+		Long myUserId;
+		try {
+			myUserId = this.getUserIdFromToken(token);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		projectService.registerLike(myUserId, projectId);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{project_id}/like")
-	public ResponseEntity<?> deleteProjectLike(@PathVariable("project_id") Long projectId) {
-		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		projectService.unregisterLike(userId, projectId);
+	public ResponseEntity<?> deleteProjectLike(@RequestHeader(value = "Authorization", required = true) String token,
+		@PathVariable("project_id") Long projectId) {
+		Long myUserId;
+		try {
+			myUserId = this.getUserIdFromToken(token);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		projectService.unregisterLike(myUserId, projectId);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("/like")
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Page<ProjectResponseDto>> getLikedProjects(Pageable pageable) {
-		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		Page<ProjectResponseDto> likedProjects = projectService.getLikedProjects(userId, pageable);
+	public ResponseEntity<Page<ProjectResponseDto>> getLikedProjects(
+		@RequestHeader(value = "Authorization", required = true) String token, Pageable pageable) {
+		Long myUserId;
+		try {
+			myUserId = this.getUserIdFromToken(token);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		Page<ProjectResponseDto> likedProjects = projectService.getLikedProjects(myUserId, pageable);
 		return new ResponseEntity<>(likedProjects, HttpStatus.OK);
 	}
 
 	@GetMapping("/popular")
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Page<ProjectResponseDto>> getPopularProjects(Pageable pageable) {
-		Long userId = 1L; // FIXME: 토큰에서 내 아이디 가져오기
-		Page<ProjectResponseDto> likedProjects = projectService.getPopularProjects(userId, pageable);
+	public ResponseEntity<Page<ProjectResponseDto>> getPopularProjects(
+		@RequestHeader(value = "Authorization", required = false) String token, Pageable pageable) {
+		Long myUserId = this.getUserIdFromToken(token);
+		Page<ProjectResponseDto> likedProjects = projectService.getPopularProjects(myUserId, pageable);
 		return new ResponseEntity<>(likedProjects, HttpStatus.OK);
+	}
+
+	private Long getUserIdFromToken(String token) {
+		if (token == null) return null;
+		return jwtTokenProvider.getUserId(token);
 	}
 
 }

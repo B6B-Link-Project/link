@@ -3,25 +3,64 @@
 import ModalGithubButton from "@/components/Modal/ModalGithubButton.vue";
 import Tier from "@/components/Tier.vue";
 import ModalSkill from "@/components/Modal/ModalSkill.vue";
+import {MemberDetailResponseDto} from "@/dto/tmpDTOs/memberDTO.ts";
+import {PropType, ref, watch} from "vue";
+import {TeamFindSkillDTO} from "@/dto/tmpDTOs/teamBuildingDTO.ts";
+import {Builder} from "builder-pattern";
+
+const props = defineProps({
+  memberInfo: {
+    required: true,
+    type: Object as PropType<MemberDetailResponseDto>,
+  }
+});
+
+const skillMap = ref(new Map<String, TeamFindSkillDTO[]>());
+
+watch(() => props.memberInfo, () => {
+  props?.memberInfo?.skillSets.map((s) => {
+    if (!skillMap.value.has(s.skillType))
+      skillMap.value.set(s.skillType, []);
+    skillMap.value.get(s.skillType)?.push(Builder<TeamFindSkillDTO>()
+        .skillName(s.skillName)
+        .skillImageUrl(s.skillImageUrl)
+        .skillLevel(s.skillLevel)
+        .skillType(s.skillType)
+        .build());
+  })
+});
+
+const changeToKorean = (field: string): string => {
+  if (field === "FRONTEND") {
+    return "프론트엔드 개발자";
+  } else if (field === "BACKEND") {
+    return "백엔드 개발자";
+  } else if (field === "FULLSTACK") {
+    return "풀스택 개발자";
+  } else if (field === "DESIGN") {
+    return "디자이너";
+  } else if (field === "MANAGE") {
+    return "프로젝트 매니저";
+  } else
+    return "";
+}
+
 </script>
 
 <template>
   <div class="member-info-container">
     <div class="member-info">
-      <div class="member-name">카리나</div>
-      <Tier :rating="200" font-size="24px" height="28px" radius="10px" width="48px"/>
+      <div class="member-name">{{ props?.memberInfo?.name }}</div>
+      <Tier :rating="props?.memberInfo?.rating" font-size="24px" height="28px" radius="10px" width="48px"/>
       <ModalGithubButton/>
     </div>
-    <div class="member-workflow">3년차 백엔드 개발자</div>
+    <div class="member-workflow">{{ props?.memberInfo?.career }}년차 {{ changeToKorean(props?.memberInfo?.field) }}</div>
     <div class="member-introduce">
-      안녕하세요. 백엔드 개발자입니다. 동해번쩍 서해번쩍 잘합니다. 동해번쩍 서해번쩍 잘합니다. 동해번쩍 서해번쩍 잘합니다. 동해번쩍 서해번쩍 잘합니다. 동해번쩍 서해번쩍 잘합니다.
+      {{ props?.memberInfo?.introduce }}
     </div>
     <div class="skill-list-container">
-      <ModalSkill title="백엔드" margin-bottom="10px" font-size="18px" font-weight="500"/>
-      <ModalSkill title="데이터베이스" margin-bottom="10px" font-size="18px" font-weight="500"/>
-      <ModalSkill title="프론트엔드" margin-bottom="10px" font-size="18px" font-weight="500"/>
-      <ModalSkill title="협업툴" margin-bottom="10px" font-size="18px" font-weight="500"/>
-      <ModalSkill title="협업툴" margin-bottom="10px" font-size="18px" font-weight="500"/>
+      <ModalSkill v-for="[key, value] in skillMap" :skill-info="value" :title="key" font-size="18px"
+                  font-weight="500" margin-bottom="10px"/>
     </div>
     <div class="button">
       합류 요청

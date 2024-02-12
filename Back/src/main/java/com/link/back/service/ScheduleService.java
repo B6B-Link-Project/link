@@ -10,6 +10,7 @@ import com.link.back.dto.request.ScheduleRequest;
 import com.link.back.dto.response.ScheduleResponse;
 import com.link.back.entity.Schedule;
 import com.link.back.entity.User;
+import com.link.back.exception.ContentNotFoundException;
 import com.link.back.repository.ScheduleRepository;
 import com.link.back.repository.UserRepository;
 
@@ -22,7 +23,7 @@ public class ScheduleService {
 	private final UserRepository userRepository;
 
 	public ScheduleResponse getScheduleByUserId(Long userId) {
-		User user = userRepository.getReferenceById(userId);
+		User user = findUser(userId);
 		List<Schedule> schedules = scheduleRepository.findByUser(user);
 		return ScheduleResponse.builder()
 				.userId(userId)
@@ -35,7 +36,7 @@ public class ScheduleService {
 	@Transactional
 	public ScheduleResponse updateMySchedule(Long userId, ScheduleRequest scheduleRequest) {
 
-		User user = userRepository.getReferenceById(userId);
+		User user = findUser(userId);
 		scheduleRepository.deleteByUser(user);
 
 		List<Schedule> schedules =
@@ -56,6 +57,10 @@ public class ScheduleService {
 			.userId(userId)
 			.times(scheduleRequest.times())
 			.build();
+	}
+
+	private User findUser(Long userId) {
+		return userRepository.findById(userId).orElseThrow(ContentNotFoundException::new);
 	}
 
 }
