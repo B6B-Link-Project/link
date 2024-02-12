@@ -52,9 +52,8 @@ public class TeamBuildingController {
 	// 팀 참가 신청
 	@PostMapping("/{teamId}/members/apply")
 	@ResponseStatus(CREATED)
-	public void postTeamParticipateApply(@PathVariable @Positive Long teamId, @Positive Long userId) {
-		userId = 11L;
-		teamBuildingService.teamParticipate(teamId, userId, APPLIED);
+	public void postTeamParticipateApply(@PathVariable @Positive Long teamId, @RequestHeader("Authorization") String token) {
+		teamBuildingService.teamParticipate(teamId, jwtTokenProvider.getUserId(token), APPLIED);
 	}
 
 	// 팀 참가 권유
@@ -96,7 +95,7 @@ public class TeamBuildingController {
 	@DeleteMapping("{teamId}/members/apply")
 	@ResponseStatus(NO_CONTENT)
 	public void deleteTeamParticipate(@PathVariable @Positive Long teamId, @RequestHeader("Authorization") String token) {
-		teamBuildingService.refuseOrCancelTeamParticipate(teamId, jwtTokenProvider.getUserId(token), SUGGESTED);
+		teamBuildingService.refuseOrCancelTeamParticipate(teamId, jwtTokenProvider.getUserId(token), APPLIED);
 	}
 
 	// 팀 참가 권유 취소

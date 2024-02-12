@@ -165,4 +165,8 @@ public class TeamService {
 		List<TeamRecruitResponseDto> teamRecruitResponseDtos = teamList.stream().map(TeamRecruitResponseDto::new).toList();
 		return new PageImpl<>(teamRecruitResponseDtos, pageable, teamList.getTotalElements());
 	}
+
+	public List<TeamRecruitResponseDto> findAllTeam() {
+		return teamRepository.findAllTeam().stream().map(TeamRecruitResponseDto::new).toList();
+	}
 }

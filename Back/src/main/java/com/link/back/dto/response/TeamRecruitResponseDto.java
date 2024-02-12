@@ -17,6 +17,7 @@ import lombok.Setter;
 @Setter
 public class TeamRecruitResponseDto {
 
+	private final Long teamId;
 	private final String hackathonName;
 	private final int teamMaxPoint;
 	private final int teamMaxMember;
@@ -29,6 +30,7 @@ public class TeamRecruitResponseDto {
 
 	public TeamRecruitResponseDto(Team team) {
 		Hackathon hackathon = team.getHackathon();
+		this.teamId = team.getTeamId();
 		this.hackathonName = hackathon.getHackathonName();
 		this.teamMaxPoint = hackathon.getMaxPoint();
 		this.teamMaxMember = hackathon.getMaxTeamMember();

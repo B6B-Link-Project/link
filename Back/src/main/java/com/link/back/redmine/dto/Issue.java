@@ -30,30 +30,3 @@ public class Issue {
 
 
 }
-
-// {
-	// 	"issues":[
-		// 	{
-		// 	"id":3,
-		// 	"project":{"id":1,"name":"Example name"},
-		// 	"tracker":{"id":1,"name":"�� ���"},
-		// 	"status":{"id":1,"name":"�ű�","is_closed":false},
-		// 	"priority":{"id":1,"name":"�ſ����"},
-		// 	"author":{"id":1,"name":"seongjin ma"},
-		// 	"assigned_to":{"id":6,"name":"John Doe"},
-		// 	"subject":"tesettt",
-		// 	"description":"",
-		// 	"start_date":"2024-01-29",
-		// 	"due_date":null,
-		// 	"done_ratio":0,
-		// 	"is_private":false,
-		// 	"estimated_hours":null,
-		// 	"total_estimated_hours":null,
-		// 	"spent_hours":0.0,
-		// 	"total_spent_hours":0.0,
-		// 	"created_on":"2024-01-29T16:08:04Z",
-		// 	"updated_on":"2024-01-29T16:08:04Z",
-		// 	"closed_on":null
-		// 	}
-	// 	]
-// 	}

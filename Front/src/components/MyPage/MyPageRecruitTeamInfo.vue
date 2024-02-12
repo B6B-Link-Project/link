@@ -15,6 +15,12 @@ const props = defineProps({
     default:0
   }
 })
+
+const cancelApply = (teamId : number) => {
+  teamBuildingService.deleteAppliedTeam(teamId);
+  location.href = "/myPage"
+}
+
 // function getTeamInfo() {
 //   const teamService = new TeamService();
 // }
@@ -28,7 +34,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <slot/>
+  <div class="title-container">
+    <h1 class="btn">신청한 팀</h1>
+    <div class="remove-button" @click="cancelApply(refTeam?.teamId)">신청 취소</div>
+  </div>
   <h1>{{ refTeam?.teamName }}</h1>
   <h2>{{ refTeam?.teamDesc }}</h2>
   <h1>해커톤 정보</h1>
@@ -74,5 +83,57 @@ h1 {
 h2 {
   max-width: 600px;
   margin-top: 12px;
+}
+
+.btn {
+  color: #303030;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  flex: 1;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+
+.title-container {
+  display: flex;
+  gap: 10px;
+}
+
+.remove-button {
+  padding-left: 16px;
+  padding-right: 16px;
+  height: 34px;
+  border-radius: 5px;
+  color: #F2F2F2;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 33px;
+  transition: color 0.3s ease;
+}
+
+.remove-button {
+  background: #FF6161;
+  border: #FF6161 solid 1px;
+}
+
+.remove-button:hover {
+  color: #FF6161;
+  background: white;
+}
+
+@media screen and (max-width: 697px) {
+  .myPage-container {
+    flex-direction: column-reverse;
+  }
+}
+
+@media screen and (min-width: 698px) {
+  .menu {
+    max-width: 255px;
+  }
 }
 </style>

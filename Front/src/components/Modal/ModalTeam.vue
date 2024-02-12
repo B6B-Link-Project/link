@@ -1,36 +1,49 @@
 <script lang="ts" setup>
-import {Builder} from "builder-pattern";
 import UserCard from "@/components/User/UserCard.vue";
 import ModalEffect from "@/components/Modal/ModalEffect.vue";
-import {HackathonTeamInfoDetailDTO} from "@/dto/hackathonTeamInfoDTO.ts";
+import {PropType, ref} from "vue";
+import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
+import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
+import router from "@/router";
 
-const dummy: HackathonTeamInfoDetailDTO = Builder<HackathonTeamInfoDetailDTO>()
-    .maxPoint(7)
-    .nowPoint(4)
-    .maxMember(6)
-    .nowMember(3)
-    .imgUrl("https://talkimg.imbc.com/TVianUpload/tvian/TViews/image/2022/09/18/1e586277-48ba-4e8a-9b98-d8cdbe075d86.jpg")
-    .teamName("카리나와 함께")
-    .projectContent("팀 설명 및 주제 설명 팀 설명 및 주제 설명 팀 설명 및 주제 설명  팀 설명 및 주제 설명 팀 설명 및 주제 설명팀 설명 및 주제 설명팀 설명 및 주제 설명팀 설명 및 주제 설명 팀 설명 및 주제 설명팀 설명 및 주제 설명 팀 설명 및 주제 설명 팀 설명 및 주제 설명 팀 설명 및 주제 설명ㅍ팀 설명 및 주제 설명팀 설명 및 주제 설명 팀 설명 및 주제 설명팀 설명 및 주제 설명 팀 설명 및 주제 설명팀 설명 및 주제 설명")
-    .build();
+const teamBuildingService = new TeamBuildingService();
 
+defineProps({
+  data: {
+    type: Object as PropType<HackathonTeamInfo1DTO>
+  },
+  totalPoint: {
+    type: Number
+  }
+})
+
+const clickedModal = ref<Number>();
+const handleModalClose = (num: number) => {
+  clickedModal.value = num;
+}
+
+const applyTeam = (num: number | undefined) => {
+  teamBuildingService.postAppliedTeam(num);
+  // router.push("/myPage")
+  location.href = "/myPage?mode=1"
+}
 
 </script>
 
 <template>
-  <ModalEffect v-if="(dummy.maxPoint-dummy.nowPoint) > 0 && dummy.maxMember > dummy.nowMember"
-               :text="'남은 점수 '+ (dummy.maxPoint-dummy.nowPoint) + '점'"/>
+  <ModalEffect v-if="(data?.teamMaxPoint-totalPoint) > 0 && data?.teamMaxMember > data?.teamMember"
+               :text="'남은 점수 '+ (data?.teamMaxPoint-totalPoint) + '점'"/>
   <div style="padding: 24px;">
     <div class="container">
-      <img :src="dummy.imgUrl" alt="" class="img">
+      <img :src="data?.members?.[0].profileImageURL" alt="" class="img">
       <div class="team-container">
-        <h1>{{ dummy.teamName }}</h1>
+        <h1>{{ data?.teamName }}</h1>
         <section>
-          {{ dummy.projectContent }}
+          {{ data?.teamDesc }}
         </section>
         <div style="display: flex; justify-content: right">
-          <div
-              :class="!((dummy.maxPoint-dummy.nowPoint) > 0 && dummy.maxMember > dummy.nowMember)?'button':'button-clickable'">
+          <div @click="applyTeam(data?.teamId)"
+              :class="!((data?.teamMaxPoint-totalPoint) > 0 && data?.teamMaxMember > data?.teamMember)?'button':'button-clickable'">
             참가 신청
           </div>
         </div>
@@ -38,7 +51,9 @@ const dummy: HackathonTeamInfoDetailDTO = Builder<HackathonTeamInfoDetailDTO>()
     </div>
     <h2>현재팀원</h2>
     <div class="user-card-container">
-      <UserCard v-for="_ in 6" :t="true"/>
+      <template v-for="(d, i) in data?.members">
+        <UserCard @click="handleModalClose(i+1)" :userInfo="d" :t="true"/>
+      </template>
     </div>
   </div>
 </template>

@@ -2,6 +2,8 @@ package com.link.back.controller.team;
 
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -70,5 +72,11 @@ public class TeamController {
 		@RequestParam int size) {
 		Pageable pageable = PageRequest.of(page-1, size);
 		return teamService.findTeamByHackathonAndTeamSearchCond(hackathonId, teamSearchConditionDto, pageable);
+	}
+
+	@GetMapping("/hackathon/recruit/team")
+	@ResponseStatus(OK)
+	public List<TeamRecruitResponseDto> getHackathonTeam() {
+		return teamService.findAllTeam();
 	}
 }

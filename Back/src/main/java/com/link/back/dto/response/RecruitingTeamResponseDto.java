@@ -20,12 +20,14 @@ import lombok.Setter;
 @Setter
 public class RecruitingTeamResponseDto {
 
+	private final Long teamId;
 	private final String teamName;
 	private final String teamDesc;
 	private final Map<String, List<RecruitTeamMemberResponseDto>> members;
 
 	public RecruitingTeamResponseDto(List<UserTeam> userTeamList) {
 		Team team = userTeamList.get(0).getTeam();
+		this.teamId = team.getTeamId();
 		this.teamName = team.getTeamName();
 		this.teamDesc = team.getTeamDesc();
 		this.members = userTeamList.stream()

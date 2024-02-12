@@ -15,6 +15,7 @@ import lombok.Getter;
 @Getter
 public class TeamApplicationResponseDto {
 
+	private final Long teamId;
 	private final String teamName;
 	private final String teamDesc;
 	private final HackathonInfoResponseDto hackathonInfoResponseDto;
@@ -23,6 +24,7 @@ public class TeamApplicationResponseDto {
 	private final List<TeamListSimpleResponseDto> teams;
 
 	public TeamApplicationResponseDto(List<Team> teams, Team team, List<UserTeam> members) {
+		this.teamId = team.getTeamId();
 		this.teams = teams.stream()
 			.map(TeamListSimpleResponseDto::new)
 			.collect(toList());

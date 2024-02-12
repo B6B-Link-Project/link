@@ -62,10 +62,10 @@ function updateId(teamId: number) {
   <div class="myPage-container">
     <div class="content">
       <MyPageRecruitTeamInfo v-if="mode===1">
-        <div class="title-container">
-          <h1>신청한 팀</h1>
-          <div class="remove-button">신청 취소</div>
-        </div>
+<!--        <div class="title-container">-->
+<!--          <h1>신청한 팀</h1>-->
+<!--          <div class="remove-button">신청 취소</div>-->
+<!--        </div>-->
       </MyPageRecruitTeamInfo>
       <MyPageRecruitTeamInfo1 v-else-if="mode===2" :teamId="refTeamId">
         <div class="title-container">

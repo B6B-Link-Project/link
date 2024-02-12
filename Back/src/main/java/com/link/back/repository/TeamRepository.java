@@ -22,4 +22,7 @@ public interface TeamRepository extends JpaRepository<Team, Long>, TeamRepositor
 
 	@Query("select t from Team t join UserTeam ut on ut.team = t where t.teamStatus = 'BUILDING' and ut.user = :user and ut.role = 'LEADER'")
 	Team findActiveTeamByUser(@Param("user") User user);
+
+	@Query("select t from Team t where t.teamStatus = 'BUILDING' order by t.teamId limit 6")
+	List<Team> findAllTeam();
 }

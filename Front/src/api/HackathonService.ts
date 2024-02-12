@@ -9,6 +9,7 @@ import {AxiosResponse} from "axios";
 import {Builder} from "builder-pattern";
 import {HackathonInfoDTO, PageableHackathonList} from "@/dto/hackathonInfoDTO.ts";
 import {CatchError} from "@/util/error.ts";
+import {HackathonTeamDTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
 
 const apiService = new ApiService();
 
@@ -88,6 +89,23 @@ class HackathonService {
                 .build())
             .build();
     }
+
+    @CatchError
+    async getAllTeamByHackathon(params?: {
+        skillIds?: number[];
+        page?: Partial<number>;
+        size?: Partial<number>;
+        hackathonId: number
+    }): Promise<HackathonTeamDTO> {
+        const formattedParams = Object.entries(params || {})
+            .map(([key, value]) => Array.isArray(value) ?
+                value.map(val => `${key}=${encodeURIComponent(val)}`).join('&')
+                : `${key}=${encodeURIComponent(value) === "undefined" ? '' : encodeURIComponent(value)}`)
+            .join('&');
+        const urlWithParams = `${url}/teams/hackathon/${params?.hackathonId}${formattedParams ? `?${formattedParams}` : ''}`;
+        return (await apiService.getData(true, urlWithParams)).data as HackathonTeamDTO;
+    }
+
 }
 
 export {HackathonService};

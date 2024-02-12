@@ -4,6 +4,8 @@ import {IdResponseDto, IdsResponseDto} from "@/dto/IdDto.ts";
 import {Builder} from "builder-pattern";
 import {CandidatesResponseDto} from "@/dto/tmpDTOs/userDTO.ts";
 import {TeamApplicationResponseDto} from "@/dto/tmpDTOs/teamDTO.ts";
+import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
+import {CatchError} from "@/util/error.ts";
 
 const apiService = new ApiService();
 const url = "/api/teams";
@@ -129,5 +131,10 @@ export class TeamService {
         }
 
         return false;
+    }
+
+    @CatchError
+    async getRecruitTeam() : Promise<HackathonTeamInfo1DTO> {
+        return (await apiService.getData(false, `${url}/hackathon/recruit/team`)).data as HackathonTeamInfo1DTO;
     }
 }
