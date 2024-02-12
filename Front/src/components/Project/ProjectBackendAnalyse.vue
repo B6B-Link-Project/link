@@ -5,6 +5,9 @@ import Modal from "@/components/Modal/Modal.vue";
 import BarChart from "@/components/Chart/BarChart.vue";
 import {ProjectService} from "@/api/ProjectService.ts";
 import {PageableBackPerformance} from "@/dto/projectDTO.ts";
+import ThinDonutChart from "@/components/Chart/ThinDonutChart.vue";
+import {Builder} from "builder-pattern";
+import {BackPerformanceMessageResponseDto} from "@/dto/BackPerformanceMessageResponseDto.ts";
 
 defineProps({
   editable: {
@@ -13,57 +16,23 @@ defineProps({
   },
 });
 
-// const calculateAverageScores = (reports: Report[]) => {
-//   const scoreSums = new Map<string, number>();
-//   const scoreCounts = new Map<string, number>();
-//
-//   reports.forEach((report) => {
-//     Object.keys(report.report).forEach((key) => {
-//       const currentScore = report.report[key].score
-//
-//       if (scoreSums.has(key)) {
-//         scoreSums.set(key, scoreSums.get(key) || currentScore);
-//         scoreCounts.set(key, scoreCounts.get(key) || 1);
-//       } else {
-//         scoreSums.set(key, currentScore);
-//         scoreCounts.set(key, 1);
-//       }
-//     });
-//   });
-//
-//   const averageScores = new Map<string, number>();
-//   scoreSums.forEach((sum, key) => {
-//     averageScores.set(key, Math.round(sum / (scoreCounts.get(key) || 0) * 100));
-//   });
-//
-//   return Array.from(averageScores);
-// };
-
 const projectService = new ProjectService();
 let refReport: Ref<PageableBackPerformance> = ref({} as PageableBackPerformance);
+const refMessageCount: Ref<BackPerformanceMessageResponseDto> = ref({} as BackPerformanceMessageResponseDto);
 
 onMounted(async () => {
   await getBackendReport();
-  await projectService.getBackMetricsMessageCounts(1);
 })
 
 const getBackendReport = async () => {
   refReport.value = await projectService.getBackMetrics(1);
-  console.log(refReport.value.backMetrics)
+  refMessageCount.value = await projectService.getBackMetricsMessageCounts(1);
 }
 
 const updateBackendReport = () => {
-  alert("요청이 완료되었습니다. 대기열에 따라 처리 시간이 변동되며 평균적으로 페이지 1개당 20~30초가 소모됩니다.")
-
-  projectService.getBackMetrics(1);
+  alert("요청이 완료되었습니다. 대기열에 따라 처리 시간이 변동되며 평균적으로 1분이 소모됩니다.")
+  projectService.postBackMetrics(1);
 }
-
-// const buildObject = (score: number) => {
-//   return Builder<PerformanceChartDTO>()
-//       .centerText((score).toString())
-//       .actualValue((score))
-//       .build()
-// }
 
 const modalController = ref<boolean>(false);
 
@@ -73,45 +42,98 @@ function modalSwitch() {
 }
 
 const detail = ref<number>(-1);
+
+function calculateGrade(score: number): string {
+  if (score >= 90) {
+    return 'A';
+  } else if (score >= 80) {
+    return 'B';
+  } else if (score >= 70) {
+    return 'C';
+  } else if (score >= 60) {
+    return 'D';
+  } else {
+    return 'E';
+  }
+}
+
 </script>
 
 <template>
   <Modal v-if="modalController" @closeModal="modalSwitch">
     <div class="modal-container">
-      <BarChart/>
-      <h1 style="">딱콩이 레포트 </h1>
+      <BarChart :data="[refMessageCount.addCount, refMessageCount.removeCount,refMessageCount.changeCount, refMessageCount.completeCount
+      ,refMessageCount.changeCount, refMessageCount.mergeCount, refMessageCount.refactorCount, refMessageCount.moveCount, refMessageCount.replaceCount, refMessageCount.etcCount]"/>
+      <h1 style="">개선 사항</h1>
       <div class="grid">
         <h1 style="text-align: left; margin-bottom: 3px; margin-top: 3px; font-family: Pretendard-Regular,serif">
-          딱콩
+          수정 사항 설명
         </h1>
-        <h2 style="text-align: left; margin-top: 5px;flex: 1;">딱콩이</h2>
+        <h2 style="text-align: left; margin-top: 5px;flex: 1;"></h2>
       </div>
       <div class="content">
-        <h3>• 설명</h3>
-        <div class="modal-text">딱콩딱콩</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 삭제</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
+        <h3>• 추가</h3>
+        <div class="modal-text">어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다. 어쩌구 저쩌구해야합니다.</div>
       </div>
     </div>
   </Modal>
   <h1>백엔드</h1>
-  <section>
-    <h1 style="margin-bottom: 0">분석된 데이터가 없습니다!</h1>
+  <section v-if="refReport">
+    <h1 style="margin-bottom: 0;" v-if="refReport.pageable?.totalPages===0">분석된 데이터가 없습니다!</h1>
     <div class="chart-container">
-<!--      <template v-for="data in calculateAverageScores(refReport)">-->
-      <template>
-        <div>
-<!--          <div class="chart">-->
-<!--            <ThinDonutChart :pc="buildObject(data[1])"/>-->
-<!--          </div>-->
-<!--          <h2>{{ data[0] }}</h2>-->
+      <template v-for="data in refReport.backMetrics">
+        <div class="chart">
+          <ThinDonutChart
+              :pc="Builder<PerformanceChartDTO>().actualValue(100-data.bugs).centerText(calculateGrade(100-data.bugs)).build()"/>
+          <h2>버그</h2>
+        </div>
+        <div class="chart">
+          <ThinDonutChart
+              :pc="Builder<PerformanceChartDTO>().actualValue(data.coverage).centerText(data.coverage*100+'%').build()"/>
+          <h2>테스트 자동화</h2>
+        </div>
+        <div class="chart">
+          <ThinDonutChart
+              :pc="Builder<PerformanceChartDTO>().actualValue((500-data.codeSmells)/5).centerText(calculateGrade((500-data.codeSmells)/5)).build()"/>
+          <h2>코드 악취</h2>
+        </div>
+        <div class="chart">
+          <ThinDonutChart
+              :pc="Builder<PerformanceChartDTO>().actualValue(100-data.duplications).centerText(calculateGrade(100-data.duplications)).build()"/>
+          <h2>코드 중복</h2>
+        </div>
+        <div class="chart">
+          <ThinDonutChart
+              :pc="Builder<PerformanceChartDTO>().actualValue(data.securityRating * 100).centerText((data.securityRating * 100).toString()).build()"/>
+          <h2>보안 점수</h2>
         </div>
       </template>
     </div>
     <h2>* 코드 품질과 보안을 개선하기 위한 분석 결과입니다.</h2>
   </section>
-
   <div class="button-container">
     <div class="button" @click="updateBackendReport" v-if="editable">백엔드 분석 요청</div>
-<!--    <div class="button" @click="modalSwitch()" v-if="refReport.backMetrics.length!==0">분석 상세정보</div>-->
+    <div class="button" @click="modalSwitch()" v-if="refReport.pageable?.totalPages!==0">분석 상세정보</div>
   </div>
 
 </template>
@@ -147,8 +169,10 @@ section {
   border: 1px solid #7D3BFF;
   background: #FFF;
   justify-content: center;
-  min-height: calc(100% - 100px);
+  min-height: calc(100% - 96px);
   max-height: max-content;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-text {
@@ -192,14 +216,6 @@ section {
   background: white;
 }
 
-section {
-  padding: 18px;
-  border-radius: 10px;
-  border: 1px solid #7D3BFF;
-  background: #FFF;
-  justify-content: center;
-}
-
 h1 {
   color: #303030;
   text-align: center;
@@ -227,7 +243,6 @@ h3 {
 }
 
 @media screen and (max-width: 768px) {
-
   .chart-container {
     max-width: 100vw;
     width: 100%;
@@ -238,6 +253,7 @@ h3 {
   width: 92px;
   height: 92px;
   position: relative;
+  margin-bottom: 16px;
 }
 
 .chart-container {

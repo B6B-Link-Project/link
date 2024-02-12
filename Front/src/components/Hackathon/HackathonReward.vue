@@ -48,6 +48,7 @@ onMounted(async () => {
 <style scoped>
 .reward-container {
   display: flex;
+  width: 100%;
   gap: 20px;
 }
 

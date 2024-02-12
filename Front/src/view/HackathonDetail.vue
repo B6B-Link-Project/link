@@ -41,7 +41,7 @@ if (store.getters.getStatusName === "모집중") {
 <template>
   <template v-if="hackathonDetail">
     <h1>
-      제 1회 교육관련 웹 / 앱 서비스 제작 해커톤
+      {{ hackathonDetail.hackathonName }}
     </h1>
     <div class="title-container">
       <div class="hackathon-banner-list-container">

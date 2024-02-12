@@ -7,6 +7,7 @@ import {Builder} from "builder-pattern";
 import Modal from "@/components/Modal/Modal.vue";
 import RadarChart from "@/components/Chart/RadarChart.vue";
 import {round} from "@kurkle/color";
+
 defineProps({
   editable: {
     type: Boolean,
@@ -100,7 +101,8 @@ const detailOpen = (num: number) => {
               <svg fill="none" height="20" style="margin-top: 5px;" viewBox="0 0 12 20" width="20"
                    xmlns="http://www.w3.org/2000/svg">
                 <g transform="rotate(90, 6, 10)">
-                  <path d="M2 18L10 10L2 2" stroke="#A9A9A9" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                  <path d="M2 18L10 10L2 2" stroke="#A9A9A9" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="3"/>
                 </g>
               </svg>
             </div>
@@ -115,7 +117,8 @@ const detailOpen = (num: number) => {
                 <svg fill="none" height="20" style="margin-top: 5px;" viewBox="0 0 12 20" width="20"
                      xmlns="http://www.w3.org/2000/svg">
                   <g transform="rotate(270, 6, 10)">
-                    <path d="M2 18L10 10L2 2" stroke="#A9A9A9" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                    <path d="M2 18L10 10L2 2" stroke="#A9A9A9" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="3"/>
                   </g>
                 </svg>
               </div>
@@ -160,13 +163,11 @@ const detailOpen = (num: number) => {
   </Modal>
   <h1>프론트 엔드</h1>
   <section>
-    <h1 v-if="refReport.length===0" style="margin-bottom: 0">분석된 데이터가 없습니다!</h1>
+    <h1 v-if="refReport.length===0" style="margin-bottom: 0;">분석된 데이터가 없습니다!</h1>
     <div class="chart-container">
       <template v-for="data in calculateAverageScores(refReport)">
-        <div>
-          <div class="chart">
-            <ThinDonutChart :pc="buildObject(data[1])"/>
-          </div>
+        <div class="chart">
+          <ThinDonutChart :pc="buildObject(data[1])"/>
           <h2>{{ data[0] }}</h2>
         </div>
       </template>
@@ -182,28 +183,20 @@ const detailOpen = (num: number) => {
 </template>
 
 <style scoped>
+.page-box {
+  text-align: center;
+  padding-top: 16px;
+  font-family: "Jockey One", sans-serif;
+  font-size: 30px;
+  color: #2A2A2A;
+}
 .grid {
   border-bottom: #6f7070 solid 2px;
   padding: 10px;
   width: 100vw;
   max-width: 100%;
-  display: flex; gap:7px;
-}
-
-.page-box {
-  width: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 22px;
-  margin-bottom: 16px;
-}
-
-.list {
-  color: #A9A9A9;
-  font-size: 26px;
-  font-family: Jockey One, sans-serif;
-  margin-left: 10px;
-  margin-right: 10px
+  gap: 7px;
 }
 
 .content {
@@ -227,8 +220,10 @@ section {
   border: 1px solid #7D3BFF;
   background: #FFF;
   justify-content: center;
-  min-height: calc(100% - 100px);
+  min-height: calc(100% - 96px);
   max-height: max-content;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-text {
@@ -272,14 +267,6 @@ section {
   background: white;
 }
 
-section {
-  padding: 18px;
-  border-radius: 10px;
-  border: 1px solid #7D3BFF;
-  background: #FFF;
-  justify-content: center;
-}
-
 h1 {
   color: #303030;
   text-align: center;
@@ -307,7 +294,6 @@ h3 {
 }
 
 @media screen and (max-width: 768px) {
-
   .chart-container {
     max-width: 100vw;
     width: 100%;
@@ -315,6 +301,7 @@ h3 {
 }
 
 .chart {
+  margin-bottom: 16px;
   width: 92px;
   height: 92px;
   position: relative;

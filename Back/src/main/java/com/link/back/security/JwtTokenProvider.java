@@ -104,11 +104,11 @@ public class JwtTokenProvider {
     // 토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwtToken.charAt(6)==32?jwtToken.substring(7):jwtToken);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (ExpiredJwtException e) {
+        } catch (Exception e) {
             log.info(e.getMessage());
-            throw new AuthorizationException();
+            return false;
         }
     }
 

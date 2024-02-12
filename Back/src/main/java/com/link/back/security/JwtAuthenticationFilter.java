@@ -26,9 +26,13 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends GenericFilterBean {
     private final JwtTokenProvider jwtTokenProvider;
 
+    private String tokenParser(String jwtToken) {
+        if (jwtToken == null) return null;
+        return jwtToken.charAt(6) == 32 ? jwtToken.substring(7) : jwtToken;
+    }
 
     @Override
-    public void doFilter(ServletRequest  request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         // HttpServletRequest로 캐스팅
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -39,28 +43,28 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
         String refreshToken = "";
         //쿠키 가져오기
-        Cookie [] cookies = httpRequest.getCookies();
+        Cookie[] cookies = httpRequest.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                 if(cookie.getName().equals("refreshToken")){
-                     refreshToken = cookie.getValue();
-                 }
+                if (cookie.getName().equals("refreshToken")) {
+                    refreshToken = cookie.getValue();
+                }
             }
         }
 
+        accessToken = tokenParser(accessToken);
+        refreshToken = tokenParser(refreshToken);
         // 유효한 토큰의 유무를 확인합니다.
         if (accessToken != null) {
             // 어세스 토큰이 존재하는 상황
             // 만료됐는지 확인
-            System.out.println("accessToken");
             if (jwtTokenProvider.validateToken(accessToken)) {
                 this.setAuthentication(accessToken);
             }
             // 어세스 토큰이 만료된 상황 동시에 리프레시 토큰은 존재하는 상황
             else if (!jwtTokenProvider.validateToken(accessToken) && !(refreshToken.isEmpty())) {
                 /// 리프레시 토큰 만료시간 검증
-                System.out.println("refreshToken");
                 boolean validateRefreshToken = jwtTokenProvider.validateToken(refreshToken);
                 /// 리프레시 토큰 저장소 존재유무 확인
                 boolean isRefreshToken = jwtTokenProvider.existsRefreshToken(refreshToken);
@@ -69,10 +73,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                     /// 리프레시 토큰으로 userId 정보 가져오기
                     Long userId = jwtTokenProvider.getUserId(refreshToken);
                     JwtToken jwtToken = jwtTokenProvider.generateToken(userId);
-
                     // 응답 헤더에 어세스 토큰 추가
                     jwtTokenProvider.setHeaderAccessToken(httpResponse, jwtToken.getAccessToken());
-
                     // 컨텍스트에 넣기
                     this.setAuthentication(jwtToken.getAccessToken());
                 }
@@ -90,3 +92,4 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
 }
+

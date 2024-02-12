@@ -25,9 +25,12 @@ console.log(props.ht?.hackathons)
           {{ data.hackathonName }}
         </div>
       </div>
-      <RouterLink :to="`/hackathonDetail?id=${data.hackathonId}`" class="img-container">
-        <img :src="data.hackathonImageUrl" alt="">
-      </RouterLink>
+      <div class="img-container">
+        <RouterLink :to="`/hackathonDetail?id=${data.hackathonId}`">
+          <img :src="data.hackathonImageUrl" alt="">
+        </RouterLink>
+      </div>
+
       <div class="title-container">
         <div class="title">
           {{ data.hackathonTopic }}
@@ -44,7 +47,7 @@ console.log(props.ht?.hackathons)
 
 <style scoped>
 img:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .title {
