@@ -6,6 +6,8 @@ import {CandidatesResponseDto} from "@/dto/tmpDTOs/userDTO.ts";
 import {TeamApplicationResponseDto} from "@/dto/tmpDTOs/teamDTO.ts";
 import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
 import {CatchError} from "@/util/error.ts";
+import {TeamSkillAddDto} from "@/dto/tmpDTOs/TeamSkillAddDto.ts";
+import {CreateTeamDTO} from "@/dto/tmpDTOs/CreateTeamDTO.ts";
 
 const apiService = new ApiService();
 const url = "/api/teams";
@@ -137,4 +139,24 @@ export class TeamService {
     async getRecruitTeam() : Promise<HackathonTeamInfo1DTO> {
         return (await apiService.getData(false, `${url}/hackathon/recruit/team`)).data as HackathonTeamInfo1DTO;
     }
+
+    @CatchError
+    async getTeamSkillAdd(): Promise<TeamSkillAddDto[]> {
+        return (await apiService.getData(true, `${url}/team/skills`)).data as TeamSkillAddDto[];
+    }
+
+    @CatchError
+    async postCreateTeam(
+        skillIds: number[],
+        teamName: string,
+        teamDesc: string
+    ) {
+        await apiService.postData(true, `${url}`,
+            Builder<CreateTeamDTO>()
+                .skillIds(skillIds)
+                .teamName(teamName)
+                .teamDesc(teamDesc)
+                .build())
+    }
 }
+

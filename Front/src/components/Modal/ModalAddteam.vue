@@ -1,20 +1,76 @@
 <script lang="ts" setup>
 
-import SkillSelector from "@/components/SkillSelector.vue";
+import TeamSkillSelector from "@/components/TeamSkillSelector.vue";
+
+import {onMounted, provide, ref, Ref} from "vue";
+
+import {TeamSkillAddDto} from "@/dto/tmpDTOs/TeamSkillAddDto.ts";
+import {TeamService} from "@/api/TeamService.ts";
+
+const skills : Ref<TeamSkillAddDto[] | undefined> = ref([]);
+const teamService = new TeamService();
+onMounted( async () => {
+  skills.value = await teamService.getTeamSkillAdd();
+  console.log(skills.value)
+})
+
+const skillSelect: Set<Number> = new Set<Number>();
+const skillSelectRef: Ref<number[]> = ref([]);
+const index = ref<number>(0);
+const selectedSkillId = ref<number>(0);
+const skillSelectList: Ref<number[]> = ref([]);
+
+const handleSkillSelect = () => {
+  index.value = selectedSkillId.value;
+}
+
+
+const removeSkill = (i:number) => {
+  const index = skillSelectList.value.findIndex((data)=> data == i)
+  if (index !== -1) {
+    skillSelectList.value.splice(index, 1);
+    skillSelectRef.value.splice(index, 1);
+  }
+}
+
+const addSkill = function (i: number){
+
+  const targetSkill = skills.value?.[i];
+  const data = targetSkill?.skillId;
+
+  skillSelectList.value.push(i);
+  if (data != null) {
+    skillSelectRef.value.push(data);
+  }
+}
+
+const teamName = ref('');
+const teamDesc = ref('');
+
+const handleRegistration = () => {
+  teamService.postCreateTeam(skillSelectRef.value, teamName.value, teamDesc.value)
+}
+
+provide('handleSkillSelect', handleSkillSelect);
+provide('skillSelect', skillSelect);
+provide('removeSkill', removeSkill);
+provide('addSkill', addSkill);
+provide('skillSelectRef', skillSelectRef);
+provide('index', index);
+provide('selectedSkillId', selectedSkillId);
+provide('skillSelectList', skillSelectList);
 </script>
 
 <template>
   <div class="container">
     <h1>팀 등록</h1>
     <h2>팀명</h2>
-    <input class="input" type="text">
+    <input class="input" type="text" v-model="teamName">
     <h2>팀 설명</h2>
-    <textarea class="input" placeholder="팀 설명 및 추구하는 방향에 대해 자유롭게 적어주세요" style="height: 177px"></textarea>
+    <textarea class="input" placeholder="팀 설명 및 추구하는 방향에 대해 자유롭게 적어주세요" style="height: 177px" v-model="teamDesc"></textarea>
     <h2>사용할 기술</h2>
-    <SkillSelector/>
-    <h2>대표 이미지 등록</h2>
-    <input class="input" type="text">
-    <div class="button">등록하기</div>
+    <TeamSkillSelector :skills="skills"/>
+    <div class="button" @click="handleRegistration">등록하기</div>
   </div>
 </template>
 

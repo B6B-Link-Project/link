@@ -142,11 +142,11 @@ public class TeamBuildingController {
 		teamBuildingService.leaveTeamMember(teamId, userId);
 	}
 
-	// 팀 생성 // 이미지 업로드 처리
+	// 팀 생성
 	@PostMapping
 	@ResponseStatus(OK)
-	public void createTeam(@RequestBody @Valid CreateTeamRequestDto createTeamRequestDto, @Positive Long userId) {
-		teamBuildingService.createTeam(createTeamRequestDto, userId);
+	public void createTeam(@RequestBody @Valid CreateTeamRequestDto createTeamRequestDto, @RequestHeader("Authorization") String token) {
+		teamBuildingService.createTeam(createTeamRequestDto, jwtTokenProvider.getUserId(token));
 	}
 
 	// 팀 삭제

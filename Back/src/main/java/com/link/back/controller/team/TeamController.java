@@ -24,6 +24,8 @@ import com.link.back.dto.response.IdResponseDto;
 import com.link.back.dto.response.IdsResponseDto;
 import com.link.back.dto.request.TeamSearchConditionDto;
 import com.link.back.dto.response.TeamRecruitResponseDto;
+import com.link.back.dto.response.TeamSkillAddDto;
+import com.link.back.dto.response.TeamSkillDto;
 import com.link.back.service.TeamService;
 
 import jakarta.validation.constraints.Positive;
@@ -78,5 +80,11 @@ public class TeamController {
 	@ResponseStatus(OK)
 	public List<TeamRecruitResponseDto> getHackathonTeam() {
 		return teamService.findAllTeam();
+	}
+
+	@GetMapping("/team/skills")
+	@ResponseStatus(OK)
+	public List<TeamSkillAddDto> getTeamSkillAdd() {
+		return teamService.findTeamSKillAdd();
 	}
 }

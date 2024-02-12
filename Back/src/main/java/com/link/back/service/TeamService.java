@@ -20,6 +20,7 @@ import com.link.back.dto.request.TeamSearchConditionDto;
 import com.link.back.dto.response.IdResponseDto;
 import com.link.back.dto.response.IdsResponseDto;
 import com.link.back.dto.response.TeamRecruitResponseDto;
+import com.link.back.dto.response.TeamSkillAddDto;
 import com.link.back.entity.Team;
 import com.link.back.entity.User;
 import com.link.back.entity.UserTeam;
@@ -45,7 +46,7 @@ public class TeamService {
 	private final TeamRepository teamRepository;
 	private final UserRepository userRepository;
 	private final UserTeamRepository userTeamRepository;
-
+	private final SkillRepository skillRepository;
 	private final EmailService emailService; // todo: user Async
 
 	private final JwtTokenProvider jwtTokenProvider;
@@ -169,5 +170,9 @@ public class TeamService {
 
 	public List<TeamRecruitResponseDto> findAllTeam() {
 		return teamRepository.findAllTeam().stream().map(TeamRecruitResponseDto::new).toList();
+	}
+
+	public List<TeamSkillAddDto> findTeamSKillAdd() {
+		return skillRepository.findAll().stream().map(TeamSkillAddDto::new).toList();
 	}
 }
