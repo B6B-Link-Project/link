@@ -26,10 +26,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends GenericFilterBean {
     private final JwtTokenProvider jwtTokenProvider;
 
-    private String tokenParser(String jwtToken) {
-        if (jwtToken == null) return null;
-        return jwtToken.charAt(6) == 32 ? jwtToken.substring(7) : jwtToken;
-    }
+
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -52,9 +49,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 }
             }
         }
-
-        accessToken = tokenParser(accessToken);
-        refreshToken = tokenParser(refreshToken);
         // 유효한 토큰의 유무를 확인합니다.
         if (accessToken != null) {
             // 어세스 토큰이 존재하는 상황

@@ -85,36 +85,41 @@ public class JwtTokenProvider {
     }
 
     public Long getUserId(String token) {
-        if (token.substring(0,6).equals("Bearer")) {
+        if (token.substring(0, 6).equals("Bearer")) {
             token = token.substring(7);
         }
 
-        Long userId =  Long.parseLong(Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject());
+        Long userId = Long.parseLong(Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject());
         return userId;
     }
 
     // Request의 Header에서 AccessToken 값을 가져옵니다. "authorization" : "token'
     public String resolveAccessToken(HttpServletRequest request) {
-        if(request.getHeader("authorization") != null )
+        if (request.getHeader("authorization") != null)
             return request.getHeader("authorization").substring(7);
         //토큰 에러로 나중에 바꿀 예정
         return null;
     }
 
+    private String tokenParser(String jwtToken) {
+        if (jwtToken == null) return null;
+        if (jwtToken.length() < 6) return null;
+        return jwtToken.charAt(6) == 32 ? jwtToken.substring(7) : jwtToken;
+    }
+
     // 토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwtToken);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(tokenParser(jwtToken));
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
-            log.info(e.getMessage());
             return false;
         }
     }
 
     // 어세스 토큰 헤더 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-        response.setHeader("Authorization", "bearer "+ accessToken);
+        response.setHeader("Authorization", "bearer " + accessToken);
     }
 
     // RefreshToken 존재유무 확인
@@ -122,14 +127,14 @@ public class JwtTokenProvider {
 
         Optional<RefreshToken> token = refreshTokenRepository.findById(refreshToken);
 
-        if(token != null) return true;
+        if (token != null) return true;
 
         return false;
 
     }
 
     //refreshToken을 받아서 accessToken을 발급해주는 메소드
-    public String generateOauth2token(String refreshToken){
+    public String generateOauth2token(String refreshToken) {
 
         Date accessTokenExpiresIn = new Date(System.currentTimeMillis() + accessTokenExpireTime);
 
@@ -138,15 +143,14 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
 
         String accessToken = Jwts.builder()
-            .setClaims(claims)
-            .setExpiration(accessTokenExpiresIn)
-            .signWith(key, SignatureAlgorithm.HS256)
-            .compact();
+                .setClaims(claims)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
 
         return accessToken;
 
     }
-
 
 
 }
