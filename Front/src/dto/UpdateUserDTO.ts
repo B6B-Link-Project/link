@@ -3,7 +3,7 @@ import {UserImageDTO} from "@/dto/UserImageDTO.ts";
 import {UserSkillDTO} from "@/dto/UserSkillDTO.ts";
 
 export interface UpdateUserDTO {
-    password: string;
+    // password: string;
     phoneNumber: string;
     name: string;
     introduce: string;

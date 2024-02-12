@@ -4,14 +4,16 @@ import {UserService} from "@/api/UserService.ts";
 import {Builder} from "builder-pattern";
 import {SendEmailRequestDTO} from "@/dto/SendEmailRequestDTO.ts";
 import {EditValidCareerDTO} from "@/dto/EditValidCareerDTO.ts";
-import Store from "@/store";
+import router from "@/router";
 
 const userService = new UserService();
 
-const email = ref<string>('');
+const queryEmail = router.currentRoute.value.query.email;
+const queryName = router.currentRoute.value.query.name;
+const email = ref<string>(queryEmail ? queryEmail.toString() : '');
 const pw1 = ref<string>('');
 const pw2 = ref<string>('');
-const name = ref<string>('');
+const name = ref<string>(queryName ? queryName.toString() : '');
 const firstNumber = ref<string>('');
 const secondNumber = ref<string>('');
 const lastNumber = ref<string>('');

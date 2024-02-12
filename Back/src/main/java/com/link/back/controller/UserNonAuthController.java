@@ -11,10 +11,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +29,7 @@ import com.link.back.dto.request.UseApiRequest;
 import com.link.back.dto.request.UserFindEmailRequest;
 import com.link.back.dto.request.UserPasswordResetRequest;
 import com.link.back.dto.request.VerificationRequest;
-import com.link.back.entity.User;
+import com.link.back.entity.Skill;
 import com.link.back.repository.RefreshTokenRepository;
 import com.link.back.service.UserService;
 
@@ -132,7 +130,9 @@ public class UserNonAuthController {
                 .headers(headers)
                 .build();
     }
+
     //oauth2 로그인 성공시
+    //refresh 컴포넌트에서 메인으로 넘어가면서 요청
     @PostMapping("/oauth2/access")
     public ResponseEntity<String> getAccessToken(@CookieValue(value = "refreshToken", defaultValue = "") String refreshToken){
 
@@ -247,5 +247,14 @@ public class UserNonAuthController {
         userService.updateAdditionalInfo(additionalUserInfoRequest);
 
         return new ResponseEntity<>("추가정보입력이 완료되었습니다.", HttpStatus.OK);
+    }
+
+    //회원가입시에 스킬 리스트 불러오는 메소드
+    @GetMapping("/skillList")
+    public  ResponseEntity<List<Skill>> getSkills(){
+
+        List<Skill> skills = userService.getSkillList();
+
+        return new ResponseEntity<List<Skill>>(skills, HttpStatus.OK);
     }
 }

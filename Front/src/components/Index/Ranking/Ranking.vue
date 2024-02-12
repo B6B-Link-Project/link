@@ -1,7 +1,6 @@
 `<script lang="ts" setup>
 
 import IndexSubMenu from "@/components/Index/IndexSubMenu.vue";
-import {Builder} from "builder-pattern";
 import Tier from "@/components/Tier.vue";
 import {computed, onMounted, ref} from "vue";
 import {UserService} from "@/api/UserService.ts";

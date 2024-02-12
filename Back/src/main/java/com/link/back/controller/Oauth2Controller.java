@@ -49,7 +49,8 @@ public class Oauth2Controller {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 
-	// 부분부분
+	// 부분부분 메소드화
+	// 깃허브 계정이 없다면 올 수 없음
 	@GetMapping("/oauth2/github")
 	public void githubLogin(@RequestParam String code, HttpServletResponse response) throws IOException {
 
@@ -67,6 +68,7 @@ public class Oauth2Controller {
 
 		HttpHeaders headers = new HttpHeaders();
 
+		//json으로 정보 요청
 		headers.add("Authorization", "Bearer " + accessToken);
 		headers.add("Accept","application/json");
 
@@ -76,15 +78,11 @@ public class Oauth2Controller {
 			new HttpEntity<>(headers),
 			GithubProfile.class);
 
-		String registerUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/register")
-			.build()
-			//이 부분은 더 확인해봐야함
-			.encode(StandardCharsets.UTF_8)
-			.toUriString();
-
+		System.out.println(infoResponse.getBody().getName());
+		//아래서 값 할당
 		long userId = 0;
 
-		if(infoResponse.getBody().getEmail().isEmpty()) {
+		if(infoResponse.getBody().getEmail() == null) {
 
 			if(infoResponse.getBody().getName().isEmpty()) throw new IllegalArgumentException("잘못된 접근입니다.");
 
@@ -100,6 +98,12 @@ public class Oauth2Controller {
 			//회원가입 페이지로 보내기
 			else {
 				//여기서 리다이렉트 시켜버리자
+				String registerUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/register")
+					.queryParam("name", name)
+					.build()
+					//이 부분은 더 확인해봐야함
+					.encode(StandardCharsets.UTF_8)
+					.toUriString();
 				response.sendRedirect(registerUrl);
 				return;
 			}
@@ -113,6 +117,12 @@ public class Oauth2Controller {
 			Optional<User> userOptional = userRepository.findByEmail(email);
 
 			if (userOptional.isEmpty()) {
+				String registerUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/register")
+					.queryParam("email", email)
+					.build()
+					//이 부분은 더 확인해봐야함
+					.encode(StandardCharsets.UTF_8)
+					.toUriString();
 				response.sendRedirect(registerUrl);
 				return;
 			}

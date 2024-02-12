@@ -45,9 +45,9 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 		//어디 플랫폼인지 가져오는건데 필요한지 의문임
 		// String provider = oAuth2User.getAttribute("provider");
 
-		//존재하는 User인 경우
+		//존재하는 User인지 확인
 		boolean isExist = oAuth2User.getAttribute("exist");
-
+		//존재하는 User인 경우
 		if (isExist) {
 			Long userId = userRepository.findByEmail(email).get().getUserId();
 			//회원이 존재할 때 토큰 발급, 리프레쉬 토큰 추가로 넣어야함
@@ -74,9 +74,10 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
 			getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
-		} else {
+		} else { //존재하지 않는 user인 경우
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/register")
-                .build()
+				.queryParam("email", email)
+				.build()
                 //이 부분은 더 확인해봐야함
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();

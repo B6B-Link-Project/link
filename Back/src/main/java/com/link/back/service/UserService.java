@@ -1,6 +1,5 @@
 package com.link.back.service;
 
-import java.awt.print.Pageable;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,9 +21,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.link.back.dto.GetUserBeforeInfoDTO;
 import com.link.back.dto.JwtToken;
 import com.link.back.dto.LoginRequest;
 import com.link.back.dto.RankingDTO;
@@ -37,6 +36,7 @@ import com.link.back.dto.request.UserUpdateInfoRequest;
 import com.link.back.dto.response.ApiDetailResponse;
 import com.link.back.dto.response.CareerApiResponse;
 import com.link.back.dto.response.UserInfoResponsse;
+import com.link.back.entity.Skill;
 import com.link.back.entity.User;
 import com.link.back.entity.UserImage;
 import com.link.back.entity.UserSkill;
@@ -259,7 +259,6 @@ public class UserService {
 		Long userId = jwtTokenProvider.getUserId(token);
 
 		User user = userRepository.findMyDataById(userId);
-
 		//이미지, 이름, 참고 url, introduce, skills
 		return new UserInfoResponsse(user);
 	}
@@ -294,8 +293,9 @@ public class UserService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		CareerApiResponse response = objectMapper.readValue(firstData, CareerApiResponse.class);
 
+		// 이 과정을 메소드랑 레디스 이용해서 딜레이 줄이기
 		try {
-			// 5초 동안 대기
+			// 1분 동안 대기
 			TimeUnit.MINUTES.sleep(1);
 		} catch (InterruptedException e) {
 			// InterruptedException 처리
@@ -349,8 +349,6 @@ public class UserService {
 		}
 
 		int career = (int)totalCareer / 365;
-
-		System.out.println(career);
 
 		return career;
 	}
@@ -424,7 +422,7 @@ public class UserService {
 			userSkillRepository.save(newSkill);
 		}
 
-		user.updateUser(user, userImage, newSkills, userUpdateInfoRequest);
+		user.updateUser(userImage, newSkills, userUpdateInfoRequest);
 
 		userRepository.save(user);
 	}
@@ -454,10 +452,25 @@ public class UserService {
 		return rankers;
 	}
 
+	@Transactional
+	public List<Skill> getSkillList(){
+		List<Skill> skills = skillRepository.findAll();
+
+		return skills;
+	}
+
+	@Transactional
+	public GetUserBeforeInfoDTO getUserBeforeInfo(String token){
+		long userId = jwtTokenProvider.getUserId(token);
+		User user = userRepository.findMyDataById(userId);
+
+		return new GetUserBeforeInfoDTO(user);
+	}
+
 	//User 정보 수정할 때 검증할 메소드
 	public boolean validUpdateInfo(UserUpdateInfoRequest userUpdateInfoRequest) {
-		if (userUpdateInfoRequest.getPassword() == null)
-			return false;
+		// if (userUpdateInfoRequest.getPassword() == null)
+		// 	return false;
 		if (userUpdateInfoRequest.getName() == null)
 			return false;
 		if (userUpdateInfoRequest.getBirth() == null)

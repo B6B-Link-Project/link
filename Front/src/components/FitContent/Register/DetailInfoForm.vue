@@ -7,7 +7,6 @@ import Store from "@/store";
 import {Builder} from "builder-pattern";
 import {UserImageDTO} from "@/dto/UserImageDTO.ts";
 import {AddUserInfoDTO} from "@/dto/AddUserInfoDTO.ts";
-import router from "@/router";
 
 const userService = new UserService();
 

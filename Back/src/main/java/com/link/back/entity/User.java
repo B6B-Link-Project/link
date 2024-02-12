@@ -132,17 +132,14 @@ public class User implements UserDetails {
 		this.rating = 0;
 	}
 
-	public void updateUser(User user, UserImage userImage, List<UserSkill> userSkills,  UserUpdateInfoRequest userUpdateInfoRequest){
-		this.email = user.getEmail();
-		this.password = new BCryptPasswordEncoder().encode(userUpdateInfoRequest.getPassword());
+	public void updateUser(UserImage userImage, List<UserSkill> userSkills,  UserUpdateInfoRequest userUpdateInfoRequest){
+		// this.password = new BCryptPasswordEncoder().encode(userUpdateInfoRequest.getPassword());
 		this.phoneNumber = userUpdateInfoRequest.getPhoneNumber();
-		this.rating = user.rating;
 		this.name = userUpdateInfoRequest.getName();
 		this.birth = userUpdateInfoRequest.getBirth();
 		this.gender = userUpdateInfoRequest.isGender();
 		this.userSkills = userSkills;
 		this.registeredDate = userUpdateInfoRequest.isRegistered()? LocalDate.now():null;
-		this.deployUrl = user.deployUrl;
 		this.introduce = userUpdateInfoRequest.getIntroduce();
 		//dto 만들기
 		this.userImage = userImage;
@@ -150,7 +147,6 @@ public class User implements UserDetails {
 		this.field = userUpdateInfoRequest.getField();
 		this.career = userUpdateInfoRequest.getCareer();
 		this.registered = userUpdateInfoRequest.isRegistered();
-		this.joinState = user.joinState;
 	}
 
 	public void addUserInfo (UserImage userImage, List<UserSkill> userSkills,  AdditionalUserInfoRequest additionalUserInfoRequest){

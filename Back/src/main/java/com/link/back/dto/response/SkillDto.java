@@ -3,6 +3,7 @@ package com.link.back.dto.response;
 import com.link.back.entity.Skill;
 import com.link.back.entity.UserSkill;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter

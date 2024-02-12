@@ -3,18 +3,19 @@ import {UserService} from "@/api/UserService.ts";
 import ContentFit from "@/components/Util/ContentFit.vue";
 import SkillSelector from "@/components/SkillSelector.vue";
 import FitDropDown from "@/components/FitContent/FitDropDown.vue";
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {Builder} from "builder-pattern";
 import {UserImageDTO} from "@/dto/UserImageDTO.ts";
 import {EditValidCareerDTO} from "@/dto/EditValidCareerDTO.ts";
 import Store from "@/store/index.ts";
 import {UpdateUserDTO} from "@/dto/UpdateUserDTO.ts";
 import router from "@/router";
+import store from "@/store";
 
 const userService = new UserService();
 
-const pw1 = ref<string>('');
-const pw2 = ref<string>('');
+// const pw1 = ref<string>('');
+// const pw2 = ref<string>('');
 const name = ref<string>('');
 const year = ref<number>();
 const month = ref<number>();
@@ -31,7 +32,7 @@ const registered = ref<boolean>(false);
 const introduce = ref<string>('');
 const currentYear = new Date().getFullYear();// 올해 연도
 const image = Builder<UserImageDTO>()
-    .userImageId(1)
+    .userImageId(13)
     .userImageName('user_image1.jpg')
     .userImageUrl('http://example.com/images/user_image1.jpg')
     .userOriginImageName('user_image_origin1.jpg')
@@ -52,6 +53,35 @@ const telecomOptions = ref([
    'KT' ,
   'LG U+'
 ]);
+const getBeforeEditInfo = computed(async () => {
+  const response = await userService.getBeforeEditInfo();
+  return response;
+});
+
+const beforeInfo = ref<UpdateUserDTO>();
+
+onMounted(async () => {
+  beforeInfo.value = await getBeforeEditInfo.value;
+
+  const birth = beforeInfo.value?.birth.toString();
+  const parts = birth?.split("-");
+
+  name.value = beforeInfo.value?.name;
+  year.value = parseInt(parts[0]);
+  month.value = parseInt(parts[1]);
+  day.value = parseInt(parts[2]);
+  gender.value = beforeInfo.value?.gender;
+  referenceUrl.value = beforeInfo.value?.referenceUrl;
+  career.value = beforeInfo.value?.career;
+  registered.value = beforeInfo.value?.registered;
+  introduce.value = beforeInfo.value?.introduce;
+  firstNumber.value = beforeInfo.value?.phoneNumber.substring(0, 3);
+  secondNumber.value = beforeInfo.value?.phoneNumber.substring(3, 7);
+  lastNumber.value = beforeInfo.value?.phoneNumber.substring(7, 11);
+  store.commit('setSkillSelectList', beforeInfo.value?.userSkills);
+  store.commit('setField', beforeInfo.value?.field);
+});
+
 
 //경력인증 했는지 확인
 const isValid = ref<boolean>(false);
@@ -123,6 +153,7 @@ const validCareer = async function() {
   isValid.value = true;
 }
 
+//부분만 눌러도 수정 할 수 있도록
 const updateUser = function () {
   if(!name.value){
     alert("이름을 입력해주세요")
@@ -185,9 +216,8 @@ const updateUser = function () {
   }
 
   //경력인증 확인
-
   const data = Builder<UpdateUserDTO>()
-      .password(pw1.value)
+      // .password(pw1.value)
       .name(name.value)
       .birth(new Date(year.value.toString() + "-" + month.value.toString() + "-" + day.value.toString()))
       .phoneNumber(firstNumber.value + secondNumber.value + lastNumber.value)
@@ -215,10 +245,10 @@ const updateUser = function () {
   <ContentFit>
     <h1>회원 정보 수정</h1>
     <div class="holder">
-      <h3>비밀번호</h3>
-      <input v-model="pw1" class="text-input" type="password">
-      <h3>비밀번호 확인</h3>
-      <input v-model="pw2" class="text-input" type="password">
+<!--      <h3>비밀번호</h3>-->
+<!--      <input v-model="pw1" class="text-input" type="password">-->
+<!--      <h3>비밀번호 확인</h3>-->
+<!--      <input v-model="pw2" class="text-input" type="password">-->
       <h3>이름</h3>
       <input v-model="name" class="text-input" type="text">
       <h3>생년월일</h3>
@@ -266,7 +296,7 @@ const updateUser = function () {
       <input v-model="referenceUrl" class="text-input" type="text">
 
       <h3>분야</h3>
-      <FitDropDown/>
+      <FitDropDown :prop = "beforeInfo"/>
 
       <h3>관련 경력</h3>
       <div class="detail-content-container">

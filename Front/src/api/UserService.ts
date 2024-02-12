@@ -13,6 +13,7 @@ import {AddUserInfoDTO} from "@/dto/AddUserInfoDTO.ts";
 import {GetUserDataDTO} from "@/dto/GetUserDataDTO.ts";
 import Store from "@/store";
 import {RankingUserDTO} from "@/dto/rankingUserDTO.ts";
+import {SkillRequestDto} from "@/dto/tmpDTOs/skillDTO.ts";
 
 const apiService = new ApiService();
 
@@ -267,6 +268,18 @@ class UserService {
     @CatchError
     async getTopFive() :Promise<RankingUserDTO[]> {
         const response = await apiService.getData(false, `${nonAuthUrl}/ranking`, );
+        return response.data;
+    }
+    //스킬 리스트 들고오기
+    @CatchError
+    async getSkills() :Promise<SkillRequestDto[]> {
+        const response = await apiService.getData(false, `${nonAuthUrl}/skillList`, );
+        return response.data;
+    }
+
+    @CatchError
+    async getBeforeEditInfo() :Promise<UpdateUserDTO> {
+        const response = await apiService.getData(true, `${authUrl}/getUserBeforeInfo`, );
         return response.data;
     }
 

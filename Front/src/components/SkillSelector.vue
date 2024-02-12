@@ -1,27 +1,25 @@
 <script lang="ts" setup>
-import {ref, Ref} from "vue";
+import {computed, onMounted, ref, Ref} from "vue";
 import minus from "@/assets/minus.png";
 import SkillIcon from "@/components/Skill/SkillIcon.vue";
 import {Builder} from "builder-pattern";
 import store from "@/store";
 import {UserSkillDTO} from "@/dto/tmpDTOs/UserSkillDTO.ts";
 import {SkillRequestDto} from "@/dto/tmpDTOs/skillDTO.ts";
+import {UserService} from "@/api/UserService.ts";
 
+const userService = new UserService();
 
-const skillSample: SkillDTO[] = [
-  {skillId: 1, skillName: 'Java', skillImgUrl: 'http://example.com/skills/java.jpg', skillYear: 0, skillType: 'LANGUAGE'},
-  {skillId: 2, skillName: 'React', skillImgUrl: 'http://example.com/skills/react.jpg', skillYear: 0, skillType: 'FRONTEND'},
-  {skillId: 3, skillName: 'Spring Boot', skillImgUrl: 'http://example.com/skills/springboot.jpg', skillYear: 0, skillType: 'BACKEND'},
-  {skillId: 4, skillName: 'Selenium', skillImgUrl: 'http://example.com/skills/selenium.jpg', skillYear: 0, skillType: 'TESTING'},
-  {skillId: 5, skillName: 'PostgreSQL', skillImgUrl: 'http://example.com/skills/postgresql.jpg', skillYear: 0, skillType: 'DATABASE'},
-  {skillId: 6, skillName: 'TensorFlow', skillImgUrl: 'http://example.com/skills/tensorflow.jpg', skillYear: 0, skillType: 'DATA'},
-  {skillId: 7, skillName: 'Docker', skillImgUrl: 'http://example.com/skills/docker.jpg', skillYear: 0, skillType: 'DEVOPS'},
-  {skillId: 8, skillName: 'Git', skillImgUrl: 'http://example.com/skills/git.jpg', skillYear: 0, skillType: 'TOOL'},
-  {skillId: 9, skillName: 'Photoshop', skillImgUrl: 'http://example.com/skills/photoshop.jpg', skillYear: 0, skillType: 'DESIGN'},
-  {skillId: 10,skillName: 'Kubernetes', skillImgUrl: 'http://example.com/skills/kubernetes.jpg', skillYear: 0, skillType: 'DEVOPS'},
-  {skillId: 11,skillName: 'JavaScript', skillImgUrl: 'https://i.postimg.cc/C50Qnxmj/image.png', skillYear: 0, skillType: 'FRONTEND'},
-  {skillId: 12,skillName: 'TypeScript', skillImgUrl: 'https://i.postimg.cc/C50Qnxmj/image.png', skillYear: 0, skillType: 'FRONTEND'}
-];
+const getSkills = computed(async () => {
+  const response = await userService.getSkills();
+  return response;
+});
+
+const skills = ref<SkillRequestDto[]>([]);
+
+onMounted(async () => {
+  skills.value = await getSkills.value;
+});
 
 const skillSelect: Set<Number> = new Set<Number>();
 const skillSelectRef: Ref<Set<Number>> = ref(skillSelect);
@@ -31,7 +29,12 @@ const selectedSkillId = ref<number>(0);
 const skillSelectList = ref<UserSkillDTO[]>([]);
 
 const handleSkillSelect = () => {
+  // 공통 db 전용
+  // index.value = selectedSkillId.value - 5;
+
+  //내 db 전용
   index.value = selectedSkillId.value;
+
 }
 
 const removeSkill = (skillId:number) => {
@@ -48,12 +51,12 @@ const addSkill = function (i: number){
     return;
   }
 
-  const targetSkill = skillSample[i-1];
+  const targetSkill = skills.value[i];
   const data = Builder<UserSkillDTO>()
       .skill(Builder<SkillRequestDto>()
           .skillId(targetSkill.skillId)
           .skillName(targetSkill.skillName)
-          .skillImageUrl(targetSkill.skillImgUrl)
+          .skillImageUrl(targetSkill.skillImageUrl)
           .skillType(targetSkill.skillType)
           .build()
       )
@@ -61,8 +64,16 @@ const addSkill = function (i: number){
       .build();
 
   removeSkill(i);
-  skillSelectList.value.push(data);
+
+  const tmp1 = skillSelectRef.value.size;
   skillSelectRef.value.add(i);
+  const tmp2 = skillSelectRef.value.size;
+
+  // 둘이 같으면 중복 스킬임
+  if(tmp1 === tmp2){
+    return;
+  }
+  skillSelectList.value.push(data);
 }
 
 const saveSkill = function (){
@@ -76,14 +87,14 @@ const saveSkill = function (){
     <div style="width: 100%">
       <div class="text-input" style="display: flex;">
         <select class="" v-model="selectedSkillId" style="border: none; font-size: 16px; width: 100%" @change="handleSkillSelect">
-          <option v-for="skill in skillSample" :value="skill.skillId">{{ skill.skillName }}</option>
+          <option v-for="skill in skills" :value="skill.skillId">{{ skill.skillName }}</option>
         </select>
         <input v-model="year" style="border: none; font-size: 16px; width: 20%" type="number">
       </div>
       <template v-for="skill in skillSelectList">
         <div class="my-skill-container">
           <SkillIcon :skill="
-          Builder<SkillDTO>()
+          Builder<SkillRequestDto>()
           .skillId(skill.skill.skillId)
           .skillName(skill.skill.skillName)
           .skillType(skill.skill.skillType)
