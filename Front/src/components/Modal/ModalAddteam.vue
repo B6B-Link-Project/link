@@ -2,16 +2,19 @@
 
 import TeamSkillSelector from "@/components/TeamSkillSelector.vue";
 
-import {onMounted, provide, ref, Ref} from "vue";
+import {onMounted, PropType, provide, ref, Ref} from "vue";
 
 import {TeamSkillAddDto} from "@/dto/tmpDTOs/TeamSkillAddDto.ts";
 import {TeamService} from "@/api/TeamService.ts";
 
+const props = defineProps({
+  hackathonId: Object as PropType<number>
+})
+console.log(props.hackathonId)
 const skills : Ref<TeamSkillAddDto[] | undefined> = ref([]);
 const teamService = new TeamService();
 onMounted( async () => {
   skills.value = await teamService.getTeamSkillAdd();
-  console.log(skills.value)
 })
 
 const skillSelect: Set<Number> = new Set<Number>();
@@ -48,7 +51,7 @@ const teamName = ref('');
 const teamDesc = ref('');
 
 const handleRegistration = () => {
-  teamService.postCreateTeam(skillSelectRef.value, teamName.value, teamDesc.value)
+  teamService.postCreateTeam(skillSelectRef.value, teamName.value, teamDesc.value, <number>props.hackathonId)
 }
 
 provide('handleSkillSelect', handleSkillSelect);

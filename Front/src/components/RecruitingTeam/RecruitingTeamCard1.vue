@@ -15,8 +15,6 @@ const totalPoints = (props.data?.members || []).reduce((total, member) => {
   return total + memberPoint;
 }, 0);
 
-console.log('totalPoints :', totalPoints);
-
 const refModal = ref<Boolean>(false);
 const controlModal = () => {
   refModal.value = !refModal.value;

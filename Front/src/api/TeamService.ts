@@ -149,11 +149,12 @@ export class TeamService {
     async postCreateTeam(
         skillIds: number[],
         teamName: string,
-        teamDesc: string
+        teamDesc: string,
+        hackathonId: number
     ) {
-        await apiService.postData(true, `${url}`,
+        await apiService.postData(true, `${url}/${hackathonId}`,
             Builder<CreateTeamDTO>()
-                .skillIds(skillIds)
+                .teamSkills(skillIds)
                 .teamName(teamName)
                 .teamDesc(teamDesc)
                 .build())

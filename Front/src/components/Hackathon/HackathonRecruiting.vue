@@ -21,6 +21,13 @@ const refTeamList: Ref<HackathonTeamDTO | undefined> = ref();
 const refSkillCategory: Ref<SkillCategoryResponseDto | undefined> = ref();
 const skillCategoryList: Ref<SkillCategory[]> = ref([]);
 
+defineProps({
+  hackathonId: {
+    type: Number,
+    required: true,
+  }
+})
+
 onMounted(async () => {
   refSkillCategory.value = await teamBuildingService.getAllSkillType();
   const queryId = route.query.id;
@@ -117,7 +124,7 @@ const modalController = () => {
 
 <template>
   <Modal v-if="modalRef" @closeModal="modalController">
-    <ModalAddTeam/>
+    <ModalAddTeam :hackathonId="hackathonId"/>
   </Modal>
   <h1>모집중인 팀</h1>
   <div class="category-button-container">

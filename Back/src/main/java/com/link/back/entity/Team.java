@@ -4,6 +4,7 @@ import static com.link.back.config.AppConstant.*;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 public class Team {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = IDENTITY)
 	private Long teamId;
 
 	@ManyToOne(fetch = LAZY)
@@ -55,11 +56,12 @@ public class Team {
 	List<TeamSkill> teamSkills = new ArrayList<>();
 
 	@Builder
-	public Team(String teamName, TeamStatus teamStatus, Integer teamMember, String teamDesc) {
+	public Team(String teamName, TeamStatus teamStatus, Integer teamMember, String teamDesc, Hackathon hackathon) {
 		this.teamName = teamName;
 		this.teamStatus = teamStatus;
 		this.teamMember = teamMember;
 		this.teamDesc = teamDesc;
+		this.hackathon = hackathon;
 	}
 
 	@Builder(builderMethodName = "updateBuilder")

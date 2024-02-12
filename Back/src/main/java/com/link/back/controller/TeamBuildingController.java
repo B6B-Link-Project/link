@@ -138,15 +138,15 @@ public class TeamBuildingController {
 	// 팀원 탈퇴
 	@DeleteMapping("/{teamId}/members")
 	@ResponseStatus(NO_CONTENT)
-	public void leaveTeamMember(@PathVariable @Positive Long teamId, @Positive Long userId) {
-		teamBuildingService.leaveTeamMember(teamId, userId);
+	public void leaveTeamMember(@PathVariable @Positive Long teamId, @RequestHeader("Authorization") String token) {
+		teamBuildingService.leaveTeamMember(teamId, jwtTokenProvider.getUserId(token));
 	}
 
 	// 팀 생성
-	@PostMapping
+	@PostMapping("/{hackathonId}")
 	@ResponseStatus(OK)
-	public void createTeam(@RequestBody @Valid CreateTeamRequestDto createTeamRequestDto, @RequestHeader("Authorization") String token) {
-		teamBuildingService.createTeam(createTeamRequestDto, jwtTokenProvider.getUserId(token));
+	public void createTeam(@RequestBody @Valid CreateTeamRequestDto createTeamRequestDto, @PathVariable Long hackathonId, @RequestHeader("Authorization") String token) {
+		teamBuildingService.createTeam(createTeamRequestDto, hackathonId, jwtTokenProvider.getUserId(token));
 	}
 
 	// 팀 삭제

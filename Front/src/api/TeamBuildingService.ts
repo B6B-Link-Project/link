@@ -101,6 +101,16 @@ class TeamBuildingService {
         const response = await apiService.getData(false, `${url}/teams/recruit/detail/${userId}`);
         return response.data;
     }
+
+    @CatchError
+    async deleteTeam(teamId:number) {
+        await apiService.deleteData(true, `${url}/teams/${teamId}`,'')
+    }
+
+    @CatchError
+    async removeTeam(teamId:number) {
+        await apiService.deleteData(true, `${url}/teams/${teamId}/members`,'')
+    }
 }
 
 export {

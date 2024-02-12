@@ -1,5 +1,5 @@
 export interface CreateTeamDTO {
-    skillIds: number[],
+    teamSkills: number[],
     teamName: string,
     teamDesc: string
 }

@@ -24,12 +24,14 @@ import com.link.back.dto.response.RecruitingTeamResponseDto;
 import com.link.back.dto.response.TeamApplicationResponseDto;
 import com.link.back.dto.response.TeamResponseDto;
 import com.link.back.entity.MemberStatus;
-import com.link.back.entity.Project;
 import com.link.back.entity.Team;
+import com.link.back.entity.TeamSkill;
 import com.link.back.entity.TeamStatus;
 import com.link.back.entity.User;
 import com.link.back.entity.UserTeam;
+import com.link.back.repository.HackathonRepository;
 import com.link.back.repository.ProjectRepository;
+import com.link.back.repository.SkillRepository;
 import com.link.back.repository.TeamRepository;
 import com.link.back.repository.TeamSkillRepository;
 import com.link.back.repository.UserRepository;
@@ -50,6 +52,9 @@ public class TeamBuildingService {
 	private final ProjectRepository projectRepository;
 	private final TeamSkillRepository teamSkillRepository;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final HackathonRepository hackathonRepository;
+	private final SkillRepository skillRepository;
+
 	public void teamParticipate(Long teamId, Long userId, MemberStatus status) {
 		Team team = teamRepository.findById(teamId).orElseThrow(RuntimeException::new);
 		User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
@@ -116,12 +121,14 @@ public class TeamBuildingService {
 		userTeamRepository.deleteUserTeamByTeamIdAndUserId(teamId, userId);
 	}
 
-	public void createTeam(CreateTeamRequestDto createTeamRequestDto, Long userId) {
+	public void createTeam(CreateTeamRequestDto createTeamRequestDto, Long hackathonId, Long userId) {
+
 		Team team = Team.builder()
 			.teamName(createTeamRequestDto.getTeamName())
 			.teamStatus(TeamStatus.BUILDING)
-			.teamMember(0)
+			.teamMember(1)
 			.teamDesc(createTeamRequestDto.getTeamDesc())
+			.hackathon(hackathonRepository.findById(hackathonId).orElseThrow(RuntimeException::new))
 			.build();
 		teamRepository.save(team);
 		User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
@@ -132,10 +139,13 @@ public class TeamBuildingService {
 			.memberStatus(JOINED)
 			.build();
 		userTeamRepository.save(userTeam);
-		Long teamId = team.getTeamId();
 		List<Long> teamSkills = createTeamRequestDto.getTeamSkills();
-		for (Long teamSkill : teamSkills) {
-			teamSkillRepository.saveById(teamSkill, teamId);
+		for (Long skill : teamSkills) {
+			TeamSkill teamSkill = TeamSkill.builder()
+				.team(team)
+				.skill(skillRepository.findById(skill).orElseThrow(RuntimeException::new))
+				.build();
+			teamSkillRepository.save(teamSkill);
 		}
 	}
 
@@ -177,9 +187,12 @@ public class TeamBuildingService {
 		return new MemberDetailResponseDto(user);
 	}
 
-	public Page<MemberDetailResponseDto> findMemberByCond(Pageable pageable, UserSearchConditionDto userSearchConditionDto) {
+	public Page<MemberDetailResponseDto> findMemberByCond(Pageable pageable,
+		UserSearchConditionDto userSearchConditionDto) {
 		Page<User> userPage = userRepository.findBySearchCondition(pageable, userSearchConditionDto);
-		List<MemberDetailResponseDto> memberDetailResponseDtos = userPage.stream().map(MemberDetailResponseDto::new).toList();
+		List<MemberDetailResponseDto> memberDetailResponseDtos = userPage.stream()
+			.map(MemberDetailResponseDto::new)
+			.toList();
 
 		return new PageImpl<>(memberDetailResponseDtos, pageable, userPage.getTotalElements());
 	}

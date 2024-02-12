@@ -29,4 +29,10 @@ public class TeamSkill {
 	@JoinColumn(name = "skill_id")
 	private Skill skill;
 
+	@Builder
+	public TeamSkill(Team team, Skill skill) {
+		this.team = team;
+		this.skill = skill;
+	}
+
 }

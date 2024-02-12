@@ -25,6 +25,7 @@ import com.link.back.entity.Team;
 import com.link.back.entity.User;
 import com.link.back.entity.UserTeam;
 import com.link.back.exception.ContentNotFoundException;
+import com.link.back.repository.SkillRepository;
 import com.link.back.repository.TeamRepository;
 import com.link.back.repository.UserRepository;
 import com.link.back.repository.UserTeamRepository;

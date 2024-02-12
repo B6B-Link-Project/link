@@ -43,11 +43,13 @@ public class IssueController {
 	@GetMapping("/{projectId}/issue")
 	@ResponseStatus(OK)
 	public IssueCountResponseDto getIssueList(@PathVariable Long projectId, @RequestHeader("Authorization") String token) {
-		// Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
-		// Long redMineProjectId = redmineProjectService.findProjectId(project.getProjectName() + projectId);
-		IssueListResponse issueList = redmineProjectService.findIssueList(projectId);
-		Long userId = jwtTokenProvider.getUserId(token);
-		return new IssueCountResponseDto(issueList, userId);
+		Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+		Long redMineProjectId = redmineProjectService.findProjectId(project.getProjectName() + projectId);
+		IssueListResponse issueList = redmineProjectService.findIssueList(redMineProjectId);
+		User user = userRepository.findById(jwtTokenProvider.getUserId(token)).orElseThrow(RuntimeException::new);
+		String login = user.getField() + user.getName();
+		Long redmineUserId = redmineProjectService.findUserId(login);
+		return new IssueCountResponseDto(issueList, redmineUserId);
 	}
 
 	// @GetMapping("/{projectId}/issue")

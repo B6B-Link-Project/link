@@ -72,10 +72,9 @@ if (store.getters.getStatusName === "모집중") {
         <h4>4. 어쩌구 저쩌구 한다.어쩌구 저쩌구 한다.어쩌구 저쩌구 한다.어쩌구 저쩌구 한다.어쩌구 저쩌구 한다.어쩌구 저쩌구 한다.</h4>
       </div>
     </div>
-
     <HackathonLeaderBoard v-if="mode===1" :id="parseInt(<string>route.query.id)"/>
     <HackathonReward v-else-if="mode===2" :id="parseInt(<string>route.query.id)"/>
-    <HackathonRecruiting v-else/>
+    <HackathonRecruiting v-else :hackathonId="route.query.id"/>
   </template>
 
 </template>

@@ -47,12 +47,27 @@ const refuseApply = (userId: number) => {
 
 const isLeader = ref<Boolean>();
 
+const deleteTeam = () => {
+  teamBuildingService.deleteTeam(refTeamId.value)
+  location.href = "/myPage"
+}
+
+const removeTeam = () => {
+  teamBuildingService.removeTeam(refTeamId.value)
+  location.href = "/myPage"
+}
+
 </script>
 
 <template>
   <div class="recruiting-container">
     <h1>모집중인 팀</h1>
-    <div class="remove-button">프로젝트 삭제</div>
+    <template v-if="isLeader">
+      <div class="remove-button" @click="deleteTeam">팀 삭제</div>
+    </template>
+    <template v-else>
+      <div class="remove-button" @click="removeTeam">팀 떠나기</div>
+    </template>
   </div>
   <h2>{{ refTeam?.teamName }}</h2>
   <p class="desc">{{ refTeam?.teamDesc }}</p>
