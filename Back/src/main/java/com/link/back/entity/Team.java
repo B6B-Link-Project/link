@@ -1,6 +1,7 @@
 package com.link.back.entity;
 
 import static com.link.back.config.AppConstant.*;
+import static com.link.back.entity.TeamStatus.*;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.*;
@@ -18,7 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,6 +69,18 @@ public class Team {
 		this.teamName = teamName;
 		this.teamDesc = teamDesc;
 		this.teamSkills = teamSkills;
+	}
+
+	public void makeProject() {
+		this.teamStatus = COMPLETE;
+	}
+
+	public void joinTeam() {
+		this.teamMember++;
+	}
+
+	public void removeMember() {
+		this.teamMember--;
 	}
 
 }

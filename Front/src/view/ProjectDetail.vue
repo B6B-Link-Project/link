@@ -9,12 +9,12 @@ import {onMounted, Ref, ref, watch} from "vue";
 import {ProjectDetailDto, ProjectRequestDto} from "@/dto/projectDTO.ts";
 import ProjectStore from "@/store/projectStorage.ts";
 import {ProjectService} from "@/api/ProjectService.ts";
-import {onBeforeRouteUpdate, useRoute} from "vue-router";
+import {useRoute} from "vue-router";
 import router from "@/router";
 import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
 import {TeamMemberResponseDto, TeamSkillDto} from "@/dto/tmpDTOs/teamDTO.ts";
 import {SkillType} from "@/dto/tmpDTOs/commonDTO.ts";
-import {TeamService} from "@/api/TeamService.ts";
+import {IssueCountResponseDTO} from "@/dto/tmpDTOs/IssueCountResponseDTO.ts";
 
 
 interface TeamRefs {
@@ -32,6 +32,11 @@ const teamRefs: TeamRefs = {
   membersRef: ref([]),
   skillsMapRef: ref(new Map<SkillType, TeamSkillDto[]>()),
 }
+const issueCount: Ref<IssueCountResponseDTO | undefined> = ref();
+
+onMounted(async () => {
+  issueCount.value = await projectService.getIssueCount(parseInt(<string>route.params.id))
+})
 
 const initTeamRefs = async (teamId: number) => {
   const teamResponseDto = await teamBuildingService.getTeamDetailByTeamId(teamId);
@@ -99,7 +104,7 @@ const newImage = ref();
     <div class="side-container">
       <img class="project-image"
            :src="projectDetail.imgSrc"
-           ref="projectImg">
+           ref="projectImg" alt="">
 
       <template v-if="isLeader">
         <h1 style="margin: 10px 0">이미지 변경</h1>
@@ -109,8 +114,42 @@ const newImage = ref();
           <!--      <input v-model="edit.url"  :placeholder="edit.text + ' 입력'">-->
         </div>
       </template>
-
       <ProjectLink :project-detail="projectDetail" :update-project="updateProject" :editable="isLeader"/>
+      <h1 class="redmineTitle">레드마인</h1>
+      <div class="table">
+        <ul>
+          <li>할일</li>
+          <li>진행중</li>
+          <li>완료</li>
+        </ul>
+        <ul>
+          <li>
+            <template v-if="issueCount?.issueCount['할 일']">
+              {{issueCount?.issueCount['할 일']}}
+            </template>
+            <template v-else>
+              0
+            </template>
+          </li>
+          <li>
+            <template v-if="issueCount?.issueCount['진행중']">
+              {{issueCount?.issueCount['진행중']}}
+            </template>
+            <template v-else>
+              0
+            </template>
+          </li>
+          <li>
+            <template v-if="issueCount?.issueCount['완료']">
+              {{issueCount?.issueCount['완료']}}
+            </template>
+            <template v-else>
+              0
+            </template>
+          </li>
+        </ul>
+      </div>
+      <a :href="`http://localhost:9090/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈 관리하기</a>
     </div>
     <project-center :project-detail="projectDetail" :editable="isLeader"/>
     <div class="side-container">
@@ -219,5 +258,52 @@ input {
   gap: 12px;
 }
 
+.table {
+  border: 1px solid #b2b2b2;
+  border-radius: 10px;
+}
+.table ul {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #b2b2b2;
+}
+.table ul:first-child li {
+  font-weight: 700;
+}
+.table ul:last-child {
+  border-bottom: none;
+}
+.table ul li {
+  list-style: none;
+  width: calc(100% / 3);
+  text-align: center;
+  padding: 10px;
+  border-right: 1px solid #b2b2b2;
+}
+.table ul li:last-child {
+  border-right: none;
+}
+
+h1.redmineTitle {
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+a.issueButton {
+  margin-top: 12px;
+  display: block;
+  height: 34px;
+  border-radius: 5px;
+  background: #7d3bff;
+  border: #7d3bff solid 1px;
+  line-height: 33px;
+  color: #FFF;
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: lighter;
+  transition: 0.3s ease color;
+  text-decoration: none;
+}
 </style>
 

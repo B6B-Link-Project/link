@@ -63,6 +63,7 @@ public class UserTeam {
 	public void joinTeam() {
 		role = MEMBER;
 		memberStatus = JOINED;
+		team.joinTeam();
 	}
 
 }

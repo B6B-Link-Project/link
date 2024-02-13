@@ -89,7 +89,7 @@ public class TeamService {
 			.orElseThrow(ContentNotFoundException::new); // todo: create exception
 
 		Team team = teamRepository.findActiveTeamByUser(loginUser);
-
+		team.removeMember();
 		UserTeam leader = userTeamRepository.findUserTeamByTeamAndUser(team, loginUser);
 
 		if (leader == null || leader.getRole() != LEADER) {

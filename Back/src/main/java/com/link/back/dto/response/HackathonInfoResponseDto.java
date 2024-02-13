@@ -16,7 +16,7 @@ public class HackathonInfoResponseDto {
 	private final LocalDate teamDeadlineDate;
 	private final LocalDate startDate;
 	private final LocalDate endDate;
-	private final String hackathonImageName;
+	private final String hackathonImageUrl;
 	private final String hackathonOriginImageName;
 
 	public HackathonInfoResponseDto(Hackathon hackathon) {
@@ -27,7 +27,7 @@ public class HackathonInfoResponseDto {
 		this.teamDeadlineDate = hackathon.getTeamDeadlineDate();
 		this.startDate = hackathon.getStartDate();
 		this.endDate = hackathon.getEndDate();
-		this.hackathonImageName = hackathon.getHackathonImage().getHackathonImageName();
+		this.hackathonImageUrl = hackathon.getHackathonImage().getHackathonImageUrl();
 		this.hackathonOriginImageName = hackathon.getHackathonImage().getHackathonOriginImageName();
 	}
 }

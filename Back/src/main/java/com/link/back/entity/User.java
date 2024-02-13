@@ -205,6 +205,13 @@ public class User implements UserDetails {
 		this.joinState = false;
 	}
 
+	public boolean getJoinStatus() {
+		return joinState;
+	}
+
+	public void startProject() {
+		this.joinState = true;
+	}
 }
 
 

@@ -3,7 +3,6 @@ package com.link.back.controller;
 import static com.link.back.entity.MemberStatus.*;
 import static org.springframework.http.HttpStatus.*;
 
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +30,6 @@ import com.link.back.dto.response.MypageConditionDto;
 import com.link.back.dto.response.RecruitingTeamResponseDto;
 import com.link.back.dto.response.TeamApplicationResponseDto;
 import com.link.back.dto.response.TeamResponseDto;
-import com.link.back.entity.Field;
 import com.link.back.security.JwtTokenProvider;
 import com.link.back.service.TeamBuildingService;
 
@@ -202,6 +200,12 @@ public class TeamBuildingController {
 	@ResponseStatus(OK)
 	public MypageConditionDto findMypageCondition(@RequestHeader("Authorization") String token) {
 		return teamBuildingService.findMypageCondition(jwtTokenProvider.getUserId(token));
+	}
+
+	@GetMapping("/recruit/{userId}")
+	@ResponseStatus(OK)
+	public Boolean getButtonIsValid(@PathVariable Long userId, @RequestHeader("Authorization") String token) {
+		return teamBuildingService.findButtonIsValid(userId, jwtTokenProvider.getUserId(token));
 	}
 
 }

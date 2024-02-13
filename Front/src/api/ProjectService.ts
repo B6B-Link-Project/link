@@ -11,6 +11,7 @@ import {Builder} from "builder-pattern";
 import {AxiosResponse} from "axios";
 import {BackPerformanceMessageResponseDto} from "@/dto/BackPerformanceMessageResponseDto.ts";
 import {CatchError} from "@/util/error.ts";
+import {IssueCountResponseDTO} from "@/dto/tmpDTOs/IssueCountResponseDTO.ts";
 
 const apiService = new ApiService();
 
@@ -239,6 +240,12 @@ class ProjectService {
         }
         return {} as BackPerformanceMessageResponseDto;
     }
+
+    @CatchError
+    async getIssueCount(projectId:number): Promise<IssueCountResponseDTO> {
+        return (await apiService.getData(true, `api/project/${projectId}/issue`, '')).data as IssueCountResponseDTO;
+    }
+
 }
 
 export {

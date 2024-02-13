@@ -2,6 +2,8 @@ package com.link.back.service;
 
 // import static com.link.back.common.mapper.ProjectMapper.*;
 
+import static com.link.back.entity.MemberStatus.*;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +29,7 @@ import com.link.back.entity.Project;
 import com.link.back.entity.ProjectImage;
 import com.link.back.entity.ProjectLike;
 import com.link.back.entity.ProjectStatus;
+import com.link.back.entity.Role;
 import com.link.back.entity.Team;
 import com.link.back.entity.User;
 import com.link.back.entity.UserTeam;
@@ -65,6 +68,15 @@ public class ProjectService {
 		// TODO: 프로젝트 이미지 받아와서 업로드
 		ProjectImage projectImage = uploadImage(image);
 		Team team = teamRepository.getReferenceById(projectRequestDto.teamId());
+		team.makeProject();
+		List<UserTeam> userTeamList = team.getUserTeamList();
+		for (UserTeam userTeam : userTeamList) {
+			if(userTeam.getMemberStatus() == JOINED) {
+				userTeam.getUser().startProject();
+			} else {
+				userTeamRepository.delete(userTeam);
+			}
+		}
 		Project project = createProjectEntity(team, projectImage, projectRequestDto);
 		Project save = projectRepository.save(project);
 

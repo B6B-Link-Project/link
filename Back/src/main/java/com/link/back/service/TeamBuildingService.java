@@ -23,6 +23,7 @@ import com.link.back.dto.response.MypageConditionDto;
 import com.link.back.dto.response.RecruitingTeamResponseDto;
 import com.link.back.dto.response.TeamApplicationResponseDto;
 import com.link.back.dto.response.TeamResponseDto;
+import com.link.back.entity.Hackathon;
 import com.link.back.entity.MemberStatus;
 import com.link.back.entity.Team;
 import com.link.back.entity.TeamSkill;
@@ -224,4 +225,31 @@ public class TeamBuildingService {
 			.anyMatch(Objects::nonNull);
 		return new MypageConditionDto(userTeamList, hasProject);
 	}
+
+	public Boolean findButtonIsValid(Long userId, Long id) {
+		Long teamId = userTeamRepository.findUserTeamsByUserId(id).stream()
+			.filter(userTeam -> userTeam.getMemberStatus() == JOINED)
+			.map(userTeam -> userTeam.getTeam().getTeamId())
+			.findFirst()
+			.orElse(0L);
+		if (teamId == 0L) {
+			return false;
+		}
+		Team team = teamRepository.findById(teamId).orElseThrow(RuntimeException::new);
+		User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
+		Hackathon hackathon = team.getHackathon();
+		int nowPoint = team.getUserTeamList().stream()
+			.filter(userTeam -> userTeam.getMemberStatus() == JOINED)
+			.mapToInt(userTeam -> userTeam.getUser().getRating() / 50 + 1)
+			.sum();
+		if (team.getTeamStatus() == COMPLETE || team.getTeamMember().equals(hackathon.getMaxTeamMember()) ||
+			user.getRating() / 50 + 1 > hackathon.getMaxPoint() - nowPoint) {
+			return false;
+		}
+		return userTeamRepository.findUserTeamsByUserId(userId).stream()
+			.noneMatch(userTeam -> userTeam.getUser().getJoinStatus() || userTeam.getTeam()
+				.getTeamId()
+				.equals(team.getTeamId()));
+	}
+
 }

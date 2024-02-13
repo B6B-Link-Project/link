@@ -3,9 +3,11 @@
 import Tier from "@/components/Tier.vue";
 import ModalGithubButton from "@/components/Modal/ModalGithubButton.vue";
 import ModalSkill from "@/components/Modal/ModalSkill.vue";
-import {PropType} from "vue";
+import {onMounted, PropType, ref} from "vue";
 import {TeamFindSkillDTO, TeamMemberFindUserDTO} from "@/dto/tmpDTOs/teamBuildingDTO.ts";
 import {Builder} from "builder-pattern";
+
+const teamBuildingService = new TeamBuildingService();
 
 const props = defineProps({
   userInfo: {
@@ -14,6 +16,13 @@ const props = defineProps({
   }
 });
 import {computed} from 'vue';
+import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
+
+const buttonIsValid = ref<Boolean>();
+
+onMounted(async () => {
+  buttonIsValid.value = await teamBuildingService.getButtonIsVaild(props.userInfo.userId)
+})
 
 // Computed property to group skills by skillType
 const groupedSkills = computed(() => {
@@ -48,7 +57,9 @@ const groupedSkills = computed(() => {
             <ModalGithubButton/>
           </a>
           <div class="button-right-container">
-            <slot/>
+            <template v-if="buttonIsValid">
+              <slot/>
+            </template>
           </div>
         </div>
       </div>
