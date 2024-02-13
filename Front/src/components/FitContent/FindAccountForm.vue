@@ -100,6 +100,8 @@ const findEmail = function () {
 
   userService.findEmail(data);
 
+  alert()
+
 }
 const sendVerificationCode = async function () {
 

@@ -18,7 +18,7 @@ const career = ref<number>(0);
 const registered = ref<boolean>(false);
 const introduce = ref<string>('');
 const image = Builder<UserImageDTO>()
-    .userImageId(111)
+    .userImageId(116)
     .userImageName('user_image1.jpg')
     .userImageUrl('http://example.com/images/user_image1.jpg')
     .userOriginImageName('user_image_origin1.jpg')

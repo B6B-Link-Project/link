@@ -249,9 +249,9 @@ public class UserNonAuthController {
         return new ResponseEntity<>("추가정보입력이 완료되었습니다.", HttpStatus.OK);
     }
 
-    //회원가입시에 스킬 리스트 불러오는 메소드
+    //추가정보, 정보 수정시에 스킬 리스트 불러오는 메소드
     @GetMapping("/skillList")
-    public  ResponseEntity<List<Skill>> getSkills(){
+    public ResponseEntity<List<Skill>> getSkills(){
 
         List<Skill> skills = userService.getSkillList();
 

@@ -5,6 +5,7 @@ import Tier from "@/components/Tier.vue";
 import {UserService} from "@/api/UserService.ts";
 import {computed, onMounted, ref} from "vue";
 import {GetUserDataDTO} from "@/dto/GetUserDataDTO.ts";
+import {Builder} from "builder-pattern";
 
 const userService = new UserService();
 
@@ -29,7 +30,6 @@ const introduce = computed(() => data.value?.introduce);
 const referenceUrl = computed(() => data.value?.referenceUrl);
 const Image = computed(() => data.value?.UserImage);
 const career = computed(() => data.value?.career);
-const userSkills = computed(() => data.value?.userSkills);
 const registered = computed(() => data.value?.registered);
 
 function changeToKorean(field: string): string {
@@ -95,7 +95,13 @@ const groupedSkills = computed(() => {
       <h2>{{ skillGroup.type }}</h2>
       <div class="skill-container">
         <div class="skill-box" v-for="skill in skillGroup.skills" :key="skill.skillName">
-          <SkillIcon :skill="skill" height="56px" radius="10px" width="56px"/>
+          <SkillIcon :skill="
+          Builder<SkillDTO>()
+          .skillId(skill.skillId)
+          .skillName(skill.skillName)
+          .skillType(skill.skillType)
+          .skillImgUrl(skill.skillImageUrl)
+          .build()" height="56px" radius="10px" width="56px"/>
           <h3>{{ skill.skillName }}</h3>
         </div>
       </div>

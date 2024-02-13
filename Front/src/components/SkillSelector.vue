@@ -30,11 +30,10 @@ const skillSelectList = ref<UserSkillDTO[]>([]);
 
 const handleSkillSelect = () => {
   // 공통 db 전용
-  // index.value = selectedSkillId.value - 5;
+  index.value = selectedSkillId.value - 5;
 
   //내 db 전용
-  index.value = selectedSkillId.value;
-
+  // index.value = selectedSkillId.value-1;
 }
 
 const removeSkill = (skillId:number) => {
@@ -94,10 +93,11 @@ const saveSkill = function (){
       <template v-for="skill in skillSelectList">
         <div class="my-skill-container">
           <SkillIcon :skill="
-          Builder<SkillRequestDto>()
+          Builder<SkillDTO>()
           .skillId(skill.skill.skillId)
           .skillName(skill.skill.skillName)
           .skillType(skill.skill.skillType)
+          .skillImgUrl(skill.skill.skillImageUrl)
           .build()" height="24px" radius="5px" style="margin: auto" width="24px"/>
           <div style="flex: 5; margin: auto">{{ skill.skill.skillName }}</div>
           <div style="display: flex; border-radius: 5px; border: 1px solid #303030; padding: 6px; width: 65px">

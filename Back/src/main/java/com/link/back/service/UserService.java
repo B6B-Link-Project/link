@@ -212,11 +212,8 @@ public class UserService {
 	//인증번호 확인 메소드
 	//맞으면 그냥 동작 틀리면 에러
 	public void compareVerificationKey(String verificationKey, String email) {
-
-		System.out.println(verificationKey);
-		System.out.println(email);
-
-		if (!verificationCodeRepository.findById(verificationKey).isPresent())
+		//두 조건 맞으면 알아서 통과
+		if (verificationCodeRepository.findById(verificationKey).isEmpty())
 			throw new IllegalArgumentException("올바른 인증번호가 아닙니다.");
 
 		if (!email.equals(verificationCodeRepository.findById(verificationKey).get().getEmail()))
@@ -259,6 +256,8 @@ public class UserService {
 		Long userId = jwtTokenProvider.getUserId(token);
 
 		User user = userRepository.findMyDataById(userId);
+
+		System.out.println(user.getName());
 		//이미지, 이름, 참고 url, introduce, skills
 		return new UserInfoResponsse(user);
 	}
@@ -452,7 +451,6 @@ public class UserService {
 	@Transactional
 	public List<Skill> getSkillList(){
 		List<Skill> skills = skillRepository.findAll();
-
 		return skills;
 	}
 

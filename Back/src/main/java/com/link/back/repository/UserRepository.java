@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
 		+ " where user.userId = :userId")
 	User findMyDataById(@Param("userId") Long userId);
 
-	//    Boolean existsByEmail(String email);
+	//Boolean existsByEmail(String email);
 	Optional<User> findByEmail(String email);
 	Optional<User> findByUserId(Long userId);
 

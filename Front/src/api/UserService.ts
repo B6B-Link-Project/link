@@ -26,6 +26,7 @@ class UserService {
     async logout() {
         await apiService.postData(true, `${nonAuthUrl}/logout`, '');
         await store.dispatch('removeToken');
+        router.push("/");
     }
 
     //oAuth2 Google 로그인 요청
