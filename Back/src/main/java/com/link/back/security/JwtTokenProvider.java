@@ -1,26 +1,30 @@
 package com.link.back.security;
 
-import com.link.back.dto.JwtToken;
-import com.link.back.dto.RefreshToken;
-import com.link.back.exception.AuthorizationException;
-import com.link.back.repository.RefreshTokenRepository;
-import com.link.back.repository.UserRepository;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import java.security.Key;
+import java.util.Date;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.util.Date;
-import java.util.Optional;
+import com.link.back.dto.JwtToken;
+import com.link.back.dto.RefreshToken;
+import com.link.back.repository.RefreshTokenRepository;
+import com.link.back.repository.UserRepository;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -85,12 +89,15 @@ public class JwtTokenProvider {
     }
 
     public Long getUserId(String token) {
-        if (token.substring(0, 6).equals("Bearer")) {
-            token = token.substring(7);
+        try {
+            if (token.substring(0, 6).equals("Bearer")) {
+                token = token.substring(7);
+            }
+            Long userId = Long.parseLong(Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject());
+            return userId;
+        } catch (Exception ignore) {
+            return null;
         }
-
-        Long userId = Long.parseLong(Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject());
-        return userId;
     }
 
     // Request의 Header에서 AccessToken 값을 가져옵니다. "authorization" : "token'

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {PropType} from "vue";
+import {CatchError} from "@/util/error.ts";
 
 const props = defineProps({
   data: {
@@ -7,6 +8,18 @@ const props = defineProps({
     required: true
   }
 })
+
+const shortEncoding = (text: string, cut: number): string => {
+  try {
+    if (text.length >= cut)
+      return text.substring(0, cut) + "...";
+    else
+      return text
+  } catch (e){
+    return ""
+  }
+}
+
 </script>
 
 <template>
@@ -15,7 +28,7 @@ const props = defineProps({
     <div style="height:50px; display: flex">
       <div style="margin: auto">
         <h1>{{ props.data.userName }}</h1>
-        <h2>{{ props.data.introduce }}</h2>
+        <h2>{{ shortEncoding(props.data.introduce, 14) }}</h2>
       </div>
     </div>
   </div>
@@ -29,6 +42,7 @@ h1 {
   font-style: normal;
   font-weight: 600;
   line-height: 22.4px; /* 140% */
+
 }
 
 h2 {
@@ -37,6 +51,9 @@ h2 {
   font-style: normal;
   font-weight: 400;
   line-height: 22.4px; /* 160% */
+  max-width:300px;
+  min-width: 250px;
+  text-overflow: ellipsis;
 }
 .simple-container {
   padding: 8px 0px;
@@ -45,7 +62,7 @@ h2 {
 }
 
 img {
-  width: 50px;
+  min-width: 50px;
   height: 50px;
   object-fit: cover;
   border-radius: 15px;

@@ -15,7 +15,7 @@ function CatchError(_: any, propertyName: string, descriptor: TypedPropertyDescr
         try {
             return await method.apply(this, args);
         } catch (error: any) {
-            if (isAxiosError(error) && error.response && (error.response.status === 401)) {
+            if (isAxiosError(error) && error.response && (error.response.status === 401 || error.response.status === 403)) {
                 await router.push('/login');
             }
             if (DEV) console.log(`Error in ${propertyName}:`, error);

@@ -140,14 +140,14 @@ h1 {
 }
 
 h2 {
-  margin-left: 14px;
+  margin-left: 8px;
   color: #303030;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 28px;
   white-space: nowrap;
-  width: 60px;
+  width: 80px;
 }
 
 .skill-list-container {
