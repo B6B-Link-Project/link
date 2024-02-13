@@ -2,6 +2,7 @@ package com.link.back.dto.response;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.link.back.redmine.dto.Issue;
@@ -14,15 +15,18 @@ import lombok.Setter;
 @Setter
 public class IssueCountResponseDto {
 
-	private final Map<Object, Long> issueCount;
+	private final Map<String, Integer> issueCount;
 
 	public IssueCountResponseDto(IssueListResponse issueList, Long userId) {
-		this.issueCount = issueList.getIssues().stream()
-			.filter(issue -> issue.getAssignedTo().getId() == userId)
-			.collect(Collectors.groupingBy(
-				issue -> issue.getStatus().getName(),
-				Collectors.counting()
-			));
+		this.issueCount = new HashMap<>();
+		for (Issue issue : issueList.getIssues()) {
+			if(issue.getAssignedTo() != null) {
+				if(issue.getAssignedTo().getId() == userId) {
+					Integer cnt = issueCount.getOrDefault(issue.getStatus().getName(), 0);
+					issueCount.put(issue.getStatus().getName(), ++cnt);
+				}
+			}
+		}
 	}
 
 }
