@@ -2,13 +2,9 @@ package com.link.back.dto.response;
 
 import static java.util.stream.Collectors.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.web.bind.annotation.GetMapping;
 
 import com.link.back.entity.Team;
 import com.link.back.entity.UserTeam;
@@ -23,6 +19,8 @@ public class RecruitingTeamResponseDto {
 	private final Long teamId;
 	private final String teamName;
 	private final String teamDesc;
+	private final Integer teamMaxMember;
+	private final Integer teamMember;
 	private final Map<String, List<RecruitTeamMemberResponseDto>> members;
 
 	public RecruitingTeamResponseDto(List<UserTeam> userTeamList) {
@@ -30,6 +28,8 @@ public class RecruitingTeamResponseDto {
 		this.teamId = team.getTeamId();
 		this.teamName = team.getTeamName();
 		this.teamDesc = team.getTeamDesc();
+		this.teamMaxMember = team.getHackathon().getMaxTeamMember();
+		this.teamMember = team.getTeamMember();
 		this.members = userTeamList.stream()
 			.collect(groupingBy(
 				userTeam -> userTeam.getMemberStatus().name(),

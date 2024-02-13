@@ -8,6 +8,7 @@ import ModalButton from "@/components/Modal/ModalButton.vue";
 import Modal from "@/components/Modal/Modal.vue";
 import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
 import {TeamService} from "@/api/TeamService.ts";
+import ModalAddProject from "@/components/Modal/ModalAddProject.vue";
 
 const clickedModal = ref<Number>();
 
@@ -65,12 +66,23 @@ const deleteSuggestionByTeam = (userId: number) => {
   location.href = "/myPage";
 }
 
+const modalRef = ref<Boolean>(false);
+const modalController = () => {
+  modalRef.value = !modalRef.value
+}
+
 </script>
 
 <template>
+  <Modal v-if="modalRef" @closeModal="modalController">
+    <ModalAddProject :teamId="refTeam?.teamId"/>
+  </Modal>
   <div class="recruiting-container">
     <h1>모집중인 팀</h1>
     <template v-if="isLeader">
+      <template v-if="refTeam?.teamMaxMember === refTeam?.teamMember">
+        <div class="remove-button" @click="modalController">해커톤 참가</div>
+      </template>
       <div class="remove-button" @click="deleteTeam">팀 삭제</div>
     </template>
     <template v-else>
@@ -102,7 +114,7 @@ const deleteSuggestionByTeam = (userId: number) => {
       <div class="list">
         <template v-if="refTeam?.members['APPLIED']">
           <template v-for="(data, i) in refTeam?.members['APPLIED']">
-<!--            <Modal v-if="clickedModal===i+1" @closeModal="handleModalClose">-->
+            <!--            <Modal v-if="clickedModal===i+1" @closeModal="handleModalClose">-->
             <Modal v-if="clickedModal1===i+1" @closeModal="handleModalClose1">
               <ModalMember :userInfo="data">
                 <template v-if="isLeader">

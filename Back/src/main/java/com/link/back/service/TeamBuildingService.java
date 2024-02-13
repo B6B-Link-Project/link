@@ -207,10 +207,10 @@ public class TeamBuildingService {
 	}
 
 	public RecruitingTeamResponseDto findRecruitingTeam(Long userId) {
-		Long teamId = userTeamRepository.findByIdAndStatus(userId)
+		Team team = userTeamRepository.findByIdAndStatus(userId)
 			.orElseThrow(RuntimeException::new)
-			.getTeam()
-			.getTeamId();
+			.getTeam();
+		Long teamId = team.getTeamId();
 		return new RecruitingTeamResponseDto(userTeamRepository.findUserTeamsByTeamId(teamId));
 	}
 
