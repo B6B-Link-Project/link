@@ -17,7 +17,7 @@ const refMyPageCond: Ref<MypageConditionDTO | undefined> = ref();
 const route = useRoute();
 const mode = ref<number>(0);
 const refTeamIds = ref<number[]>();
-const refTeamNames = ref<string[]>();
+const refTeamNames = ref<string[]>([]);
 const refTeamId = ref<number>(0);
 
 const initTeamRefs = async () => {
@@ -29,6 +29,7 @@ const initTeamRefs = async () => {
 
 onMounted(async () => {
   refMyPageCond.value = await myPageService.getMyPageCond();
+  await initTeamRefs();
 })
 
 const updatePageFromQuery = async () => {
@@ -128,7 +129,7 @@ function updateId(teamId: number) {
   <div v-if="mode==2">
     <ul>
       <li v-for="(teamId, i) in refTeamIds">
-        <router-link to="/myPage?mode=2" :class="{'select':teamId==refTeamId}" @click="updateId(teamId)">{{ teamId }}</router-link>
+        <router-link to="/myPage?mode=2" :class="{'select':teamId==refTeamId}" @click="updateId(teamId)">{{ refTeamNames[i] }}</router-link>
       </li>
     </ul>
   </div>

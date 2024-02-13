@@ -2,7 +2,7 @@
 import Tier from "@/components/Tier.vue";
 import SkillIcon from "@/components/Skill/SkillIcon.vue";
 import {Builder} from "builder-pattern";
-import {PropType} from "vue";
+import {PropType, ref} from "vue";
 import {TeamMemberFindUserDTO} from "@/dto/tmpDTOs/teamBuildingDTO.ts";
 
 const props = defineProps({
@@ -21,8 +21,6 @@ const shortEncoding = (text: string, cut: number): string => {
     else
       return text
 }
-
-const userInfo = props.userInfo;
 
 </script>
 <template>
