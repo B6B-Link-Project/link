@@ -19,6 +19,16 @@ class ReservationService {
     }
 
     @CatchError
+    async getReservationsByUserId(userId: number): Promise<ReservationResponse[]> {
+        const newUrl = `${url}/users/${userId}`;
+        const response = await apiService.getData(true, newUrl);
+        if (response && response.status === httpStatusCode.OK) {
+            return response.data;
+        }
+        return {} as ReservationResponse[];
+    }
+
+    @CatchError
     async registerReservation(data: ReservationRequest): Promise<void> {
         const newUrl = `${url}`;
         const response = await apiService.postData(true, newUrl, data);

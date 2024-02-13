@@ -44,7 +44,12 @@ public class ReservationController {
 		@RequestHeader(value = "Authorization", required = true) String token) {
 
 		Long myUserId = this.getUserIdFromToken(token);
-		return reservationService.getMyReservations(myUserId);
+		return reservationService.getReservations(myUserId);
+	}
+
+	@GetMapping("/users/{userId}")
+	public List<ReservationResponse> getReservations(@PathVariable Long userId) {
+		return reservationService.getReservations(userId);
 	}
 
 	@PostMapping

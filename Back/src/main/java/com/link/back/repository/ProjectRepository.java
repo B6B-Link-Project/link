@@ -17,7 +17,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 	@Query("SELECT p"
 		+ " FROM Project p JOIN p.team t JOIN UserTeam ut ON t = ut.team"
-		+ " WHERE ut.user.userId = :userId")
+		+ " WHERE ut.user.userId = :userId AND ut.role != 'CANDIDATE'")
 	Page<Project> findByUserId(Long userId, Pageable pageable);
 
 	Page<Project> findAllByProjectStatusOrderByRegisteredDateDesc(ProjectStatus projectStatus, Pageable pageable);

@@ -1,6 +1,6 @@
 export interface ReservationRequest {
     userId: number;
-    reservationDateTime: Date;
+    reservationDateTime: string;
 }
 
 export interface ScheduleRequest {

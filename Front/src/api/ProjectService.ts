@@ -96,19 +96,16 @@ class ProjectService {
         } catch (error) {
             console.error(error);
         }
-        return {} as PageableProjects;
+        return Builder<PageableProjects>().build();
     }
 
+    @CatchError
     async getMyProjects(): Promise<PageableProjects> {
-        try {
-            const response = await apiService.getData(true, `${url}/my-project`);
-            if (response && response.status === httpStatusCode.OK) {
-                return this.toPageableProjects(response);
-            }
-        } catch (error) {
-            console.error(error);
+        const response = await apiService.getData(true, `${url}/my-project`);
+        if (response && response.status === httpStatusCode.OK) {
+            return this.toPageableProjects(response);
         }
-        return {} as PageableProjects;
+        return Builder<PageableProjects>().build();
     }
 
     async getProjectDetail(projectId: number): Promise<ProjectDetailDto> {
@@ -132,6 +129,22 @@ class ProjectService {
             data.append('image', image as any);
 
             const response = await apiService.postMultipartData(true, `${url}/${projectId}`, data);
+            if (response && response.status === httpStatusCode.OK) {
+                return;
+            }
+        } catch (error) {
+            console.error(error);
+            return Promise.reject();
+        }
+    }
+
+    async createProject(projectRequestDto: ProjectRequestDto, image: File | null): Promise<void> {
+        try {
+            const data: FormData = new FormData();
+            data.append('project', new Blob([JSON.stringify(projectRequestDto as any)], {type: "application/json"}));
+            data.append('image', image as any);
+
+            const response = await apiService.postMultipartData(true, `${url}`, data);
             if (response && response.status === httpStatusCode.OK) {
                 return;
             }
@@ -171,6 +184,15 @@ class ProjectService {
         if (response && response.status === httpStatusCode.OK) {
             return;
         }
+    }
+
+    @CatchError
+    async checkLeader(projectId: number): Promise<boolean> {
+        const response = await apiService.getData(true, `${url}/${projectId}/leader`, {});
+        if (response && response.status === httpStatusCode.OK) {
+            return response.data as boolean;
+        }
+        return false;
     }
 
     @CatchError

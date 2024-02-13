@@ -28,7 +28,7 @@ const routes = [
     {path: '/video/:id', component: Video},
     {path: '/sharedProject', component: SharedProject},
     {
-        path: '/projectDetail', component: ProjectDetail, name: 'projectDetail',
+        path: '/projectDetail', redirect: '/myPage?mode=3',
         children: [{
             path: ':id',
             component: ProjectDetail,

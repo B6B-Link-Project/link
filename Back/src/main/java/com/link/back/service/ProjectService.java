@@ -24,8 +24,11 @@ import com.link.back.entity.Project;
 import com.link.back.entity.ProjectImage;
 import com.link.back.entity.ProjectLike;
 import com.link.back.entity.ProjectStatus;
+import com.link.back.entity.Role;
 import com.link.back.entity.Team;
 import com.link.back.entity.User;
+import com.link.back.entity.UserTeam;
+import com.link.back.exception.ContentNotFoundException;
 import com.link.back.redmine.service.RedmineProjectService;
 import com.link.back.repository.ProjectImageRepository;
 import com.link.back.repository.ProjectLikeRepository;
@@ -126,9 +129,12 @@ public class ProjectService {
 	public void updateProject(Long projectId, ProjectRequestDto projectRequestDto, MultipartFile image) {
 		Project project = projectRepository.findById(projectId).orElseThrow();
 		ProjectImage projectImage = uploadImage(image);
-		if (projectImage == null && project.getProjectImage() != null) { // 기존 이미지 삭제
-			s3Uploader.deleteFile(project.getProjectImage().getProjectImageName());
+		if (projectImage == null) {
+			projectImage = project.getProjectImage();
 		}
+		// if (projectImage == null && project.getProjectImage() != null) { // 기존 이미지 삭제
+		// 	s3Uploader.deleteFile(project.getProjectImage().getProjectImageName());
+		// }
 		updateProjectEntity(project, projectImage, projectRequestDto);
 		try {
 			projectRepository.save(project);
@@ -263,5 +269,19 @@ public class ProjectService {
 			}
 		}
 		return projectImage;
+	}
+
+	public Boolean checkLeader(Long myUserId, Long project_id) {
+		List<UserTeam> userTeamsByUserId = userTeamRepository.findUserTeamsByUserId(myUserId);
+		if (userTeamsByUserId.isEmpty())
+			return false;
+		Optional<Project> project = projectRepository.findById(project_id);
+		if (project.isEmpty())
+			throw new ContentNotFoundException();
+		for (UserTeam ut: userTeamsByUserId) {
+			if(ut.getRole() == Role.LEADER && project.get().getTeam().getUserTeamList().contains(ut))
+				return true;
+		}
+		return false;
 	}
 }

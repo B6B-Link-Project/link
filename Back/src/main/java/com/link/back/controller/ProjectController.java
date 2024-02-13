@@ -111,15 +111,15 @@ public class ProjectController {
 
 	@PostMapping
 	public ResponseEntity<?> postProject(@RequestPart(value = "project") @NotNull ProjectRequestDto projectRequestDto,
-		@RequestPart(value = "image") MultipartFile image) {
+		@RequestPart(value = "image", required = false) MultipartFile image) {
 		projectService.createProject(projectRequestDto, image);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@PutMapping("/{project_id}")
+	@PostMapping("/{project_id}")
 	public ResponseEntity<?> putProject(@PathVariable("project_id") Long projectId,
 		@RequestPart(value = "project") @NotNull ProjectRequestDto projectRequestDto,
-		@RequestPart(value = "image") MultipartFile image) {
+		@RequestPart(value = "image", required = false) MultipartFile image) {
 		projectService.updateProject(projectId, projectRequestDto, image);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
@@ -184,6 +184,19 @@ public class ProjectController {
 		Long myUserId = this.getUserIdFromToken(token);
 		Page<ProjectResponseDto> likedProjects = projectService.getPopularProjects(myUserId, pageable);
 		return new ResponseEntity<>(likedProjects, HttpStatus.OK);
+	}
+
+	@GetMapping("/{project_id}/leader")
+	public ResponseEntity<Boolean> isLeader(@RequestHeader(value = "Authorization", required = false) String token,
+		@PathVariable Long project_id) {
+		if (token == null)
+			return new ResponseEntity<>(false, HttpStatus.OK);
+		try {
+			Long myUserId = this.getUserIdFromToken(token);
+			return new ResponseEntity<>(projectService.checkLeader(myUserId, project_id), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(false, HttpStatus.OK);
+		}
 	}
 
 	private Long getUserIdFromToken(String token) {

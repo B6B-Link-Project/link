@@ -9,11 +9,12 @@ import {onMounted, Ref, ref, watch} from "vue";
 import {ProjectDetailDto, ProjectRequestDto} from "@/dto/projectDTO.ts";
 import ProjectStore from "@/store/projectStorage.ts";
 import {ProjectService} from "@/api/ProjectService.ts";
-import {useRoute} from "vue-router";
+import {onBeforeRouteUpdate, useRoute} from "vue-router";
 import router from "@/router";
 import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
 import {TeamMemberResponseDto, TeamSkillDto} from "@/dto/tmpDTOs/teamDTO.ts";
 import {SkillType} from "@/dto/tmpDTOs/commonDTO.ts";
+import {TeamService} from "@/api/TeamService.ts";
 
 
 interface TeamRefs {
@@ -25,6 +26,7 @@ interface TeamRefs {
 const route = useRoute();
 
 const teamBuildingService: TeamBuildingService = new TeamBuildingService();
+
 const teamRefs: TeamRefs = {
   skillsRef: ref([]),
   membersRef: ref([]),
@@ -58,15 +60,19 @@ const updateProject = (key: string, url: string) => {
   else if (key === 'deployUrl') {
     projectRequestDto.deployUrl = projectDetail.value.deployUrl = url;
   }
-  projectService.updateProject(projectDetail.value.projectId, projectRequestDto, null);
+  projectService.updateProject(projectDetail.value.projectId, projectRequestDto, newImage.value.files[0]);
+}
+
+const changeProjectImage = () => {
+  projectDetail.value.imgSrc = URL.createObjectURL(newImage.value.files[0]);
+  projectService.updateProject(projectDetail.value.projectId, projectRequestDto, newImage.value.files[0]);
 }
 
 const init = async () => {
   try {
     projectDetail.value = await projectService.getProjectDetail(parseInt(route.params.id as string));
   } catch (error) {
-    alert("잘못된 링크입니다!!");
-    await router.push('/');
+    await router.push('/myPage?mode=3');
   }
   projectRequestDto.projectName = projectDetail.value.projectName;
   projectRequestDto.teamId = projectDetail.value.teamId;
@@ -74,15 +80,16 @@ const init = async () => {
   projectRequestDto.projectUrl = projectDetail.value.projectUrl;
   projectRequestDto.deployUrl = projectDetail.value.deployUrl
   await initTeamRefs(projectDetail.value.teamId);
+  isLeader.value = await projectService.checkLeader(projectDetail.value.projectId);
 }
-
-// FIXME: 내 프로젝트가 하나도 없을 경우 처리 필요
 
 onMounted(() => init());
 watch(() => route.path, () => init());
 
 // TODO: 해당 팀을 소유한 리더인지 확인 필요
 const isLeader = ref(false);
+
+const newImage = ref();
 
 </script>
 
@@ -92,7 +99,17 @@ const isLeader = ref(false);
     <div class="side-container">
       <img class="project-image"
            :src="projectDetail.imgSrc"
-           ref="projectImg" alt="">
+           ref="projectImg">
+
+      <template v-if="isLeader">
+        <h1 style="margin: 10px 0">이미지 변경</h1>
+        <div class="link-content-container">
+          <input ref="newImage" id="input"
+                 type="file" name="image" accept="image/*" :multiple="false" @change="changeProjectImage">
+          <!--      <input v-model="edit.url"  :placeholder="edit.text + ' 입력'">-->
+        </div>
+      </template>
+
       <ProjectLink :project-detail="projectDetail" :update-project="updateProject" :editable="isLeader"/>
     </div>
     <project-center :project-detail="projectDetail" :editable="isLeader"/>
@@ -185,5 +202,22 @@ img {
   display: flex;
   gap: 20px;
 }
+
+input {
+  padding-left: 12px;
+  height: 36px;
+  flex: 1;
+  color: #606060;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.link-content-container {
+  display: flex;
+  gap: 12px;
+}
+
 </style>
 
