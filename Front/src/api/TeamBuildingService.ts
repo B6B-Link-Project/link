@@ -115,6 +115,10 @@ class TeamBuildingService {
     async getButtonIsVaild(userId:number): Promise<Boolean> {
         return (await apiService.getData(true, `${url}/teams/recruit/${userId}`)).data as Boolean;
     }
+
+    async getApplyButtonIsValid(teamId:number): Promise<Boolean> {
+        return (await apiService.getData(true, `${url}/teams/recruit/apply/${teamId}`)).data as Boolean;
+    }
 }
 
 export {

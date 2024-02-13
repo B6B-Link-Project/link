@@ -208,4 +208,10 @@ public class TeamBuildingController {
 		return teamBuildingService.findButtonIsValid(userId, jwtTokenProvider.getUserId(token));
 	}
 
+	@GetMapping("/recruit/apply/{teamId}")
+	@ResponseStatus(OK)
+	public Boolean getApplyButtonIsValid(@PathVariable Long teamId, @RequestHeader("Authorization") String token) {
+		return teamBuildingService.findApplyButtonIsVaild(teamId, jwtTokenProvider.getUserId(token));
+	}
+
 }

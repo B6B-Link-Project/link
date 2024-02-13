@@ -252,4 +252,17 @@ public class TeamBuildingService {
 				.equals(team.getTeamId()));
 	}
 
+	public Boolean findApplyButtonIsVaild(Long teamId, Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
+		if(user.getJoinStatus()) {
+			return false;
+		}
+		Team team = teamRepository.findById(teamId).orElseThrow(RuntimeException::new);
+		List<UserTeam> membersByTeamId = userTeamRepository.findMembersByTeamId(teamId);
+		int nowPoint = 0;
+		for (UserTeam userTeam : membersByTeamId) {
+			nowPoint += userTeam.getUser().getRating() / 50 + 1;
+		}
+		return team.getHackathon().getMaxPoint() >= nowPoint + user.getRating() / 50 + 1;
+	}
 }
