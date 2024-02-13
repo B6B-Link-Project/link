@@ -103,7 +103,9 @@ class HackathonService {
                 : `${key}=${encodeURIComponent(value) === "undefined" ? '' : encodeURIComponent(value)}`)
             .join('&');
         const urlWithParams = `${url}/teams/hackathon/${params?.hackathonId}${formattedParams ? `?${formattedParams}` : ''}`;
-        return (await apiService.getData(true, urlWithParams)).data as HackathonTeamDTO;
+        const temp = (await apiService.getData(true, urlWithParams)).data as HackathonTeamDTO;
+        console.log(temp.content[0].members[0].userImageUrl)
+        return temp;
     }
 
 }

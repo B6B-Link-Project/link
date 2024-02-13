@@ -18,7 +18,7 @@ export interface TeamMemberFindUserDTO {
     referenceUrl: string,
     field: string,
     profileOriginImageName: string,
-    profileImageURL: string,
+    userImageUrl: string,
     skillSets: TeamFindSkillDTO[]
 }
 

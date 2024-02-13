@@ -46,7 +46,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>팀원 6</h1>
+  <h1>팀원 {{members.length + 1}}</h1>
   <div class="team-container">
     <h1>팀장</h1>
     <div class="member-container">

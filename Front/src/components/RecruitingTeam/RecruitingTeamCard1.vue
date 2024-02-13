@@ -4,6 +4,7 @@ import SkillIcon from "@/components/Skill/SkillIcon.vue";
 import Modal from "@/components/Modal/Modal.vue";
 import ModalTeam from "@/components/Modal/ModalTeam.vue";
 import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
+import {Builder} from "builder-pattern";
 
 const props = defineProps({
   data: Object as PropType<HackathonTeamInfo1DTO>
@@ -28,16 +29,13 @@ const controlModal = () => {
   <div class="card-container" @click="controlModal">
     <div class="upper-box">
       <div class="img-container">
-        <template v-if="data?.members?.[0].profileImageURL">
-          <img :src="props.data?.members?.[0].profileImageURL" alt="팀" class="img-container">
-        </template>
+        <img :src="props.data.members[0].userImageUrl" alt="팀" class="img-container">
       </div>
       <div class="right-box-container">
         <div class="hackathon-title">
           <div class="hackathon-title-text">{{ props.data.hackathonName }}</div>
           <div class="year-container">
             ~ {{ props.data?.teamDeadlineDate }}
-
           </div>
         </div>
         <div class="team-name">
@@ -47,8 +45,9 @@ const controlModal = () => {
           {{ props.data?.teamDesc }}
         </div>
         <div class="skill-container">
-          <div v-for="skill in (props.data?.teamSkills || [])" style="margin-right: 9px">
-            <SkillIcon :skill="skill" height="26px" radius="5px" width="25px"/>
+          <div v-for="skill in props.data?.teamSkills.slice(0, 5)" style="margin-right: 9px">
+            <SkillIcon :skill="
+            Builder<SkillDTO>().skillName(skill.skillName).skillImgUrl(skill.skillImageUrl).build()" height="26px" radius="5px" width="25px"/>
           </div>
         </div>
       </div>
@@ -225,6 +224,7 @@ const controlModal = () => {
 }
 
 .img-container {
+  object-fit: cover;
   width: 140px;
   height: 140px;
   border-radius: 5px;

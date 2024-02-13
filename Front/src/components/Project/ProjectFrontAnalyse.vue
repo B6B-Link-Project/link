@@ -132,7 +132,7 @@ const detailOpen = (num: number) => {
                 <template v-else>
                   <div class="modal-text" v-for="(audit,i) in report.report[key].audits">
                     <div class="modal-text">
-                      {{ i + 1 }}. {{ audit.title }} [{{ audit.score * 100 }}/100]
+                      {{ i + 1 }}. {{ audit.title }} [{{ round(audit.score * 100) }}/100]
                       <div class="modal-text">- {{ audit.description }}</div>
                     </div>
                   </div>
