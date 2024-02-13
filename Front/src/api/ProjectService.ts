@@ -246,11 +246,6 @@ class ProjectService {
         return (await apiService.getData(true, `api/project/${projectId}/issue`, '')).data as IssueCountResponseDTO;
     }
 
-    @CatchError
-    async getIsMyProject(projectId:number): Promise<Boolean> {
-        return (await apiService.getData(true, `${url}/redmine/${projectId}`)).data as Boolean;
-    }
-
 }
 
 export {
