@@ -23,6 +23,7 @@ const teamService = new TeamService();
 async function suggest() {
   const teamId = (await teamService.getActiveTeamId()).id;
   await teamService.postSuggestionByTeam(teamId, props.userId);
+  location.href = "/myPage?mode=4";
 }
 
 const selectTime = (num: number) => {

@@ -57,6 +57,16 @@ const removeTeam = () => {
   location.href = "/myPage"
 }
 
+const deleteMember = (userId: number) => {
+  teamService.deleteMember(userId);
+  location.href = "/myPage";
+}
+
+const deleteSuggestionByTeam = (teamId: number, userId: number) => {
+  teamService.deleteSuggestionByTeam(teamId, userId);
+  location.href = "/myPage";
+}
+
 </script>
 
 <template>
@@ -80,7 +90,7 @@ const removeTeam = () => {
             <Modal v-if="clickedModal===i+1" @closeModal="handleModalClose">
               <ModalMember :userInfo="data">
                 <template v-if="isLeader">
-                  <ModalButton button-text="추방하기" @click="teamService.deleteMember(data.userId)"/>
+                  <ModalButton button-text="추방하기" @click="deleteMember(data.userId)"/>
                 </template>
               </ModalMember>
             </Modal>
@@ -118,7 +128,7 @@ const removeTeam = () => {
               <ModalMember :userInfo="data">
                 <template v-if="isLeader">
                   <ModalButton button-text="면접 예약"/>
-                  <ModalButton button-text="권유 취소" @click="teamService.deleteSuggestionByTeam(refTeamId, data.userId)"/>
+                  <ModalButton button-text="권유 취소" @click="deleteSuggestionByTeam(refTeamId, data.userId)"/>
                 </template>
               </ModalMember>
             </Modal>

@@ -47,10 +47,12 @@ async function getTeams() {
 
 async function acceptSuggestion(teamId: number) {
   await teamService.postSuggestionByUser(teamId);
+  location.href = "/myPage";
 }
 
 async function declineSuggestion(teamId: number) {
   await teamService.deleteSuggestionByUser(teamId);
+  location.href = "/myPage";
 }
 
 function updateId(teamId: number) {
