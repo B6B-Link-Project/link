@@ -17,7 +17,6 @@ const rankers = ref<RankingUserDTO[]>([]);
 
 onMounted(async () => {
   rankers.value = await getRanking.value;
-  console.log(rankers.value);
 });
 
 </script>
@@ -60,6 +59,9 @@ onMounted(async () => {
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .info-text {
@@ -90,6 +92,7 @@ img {
   flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 145px;
+  justify-content: center;
 }
 
 .ranking-card {

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+//@ts-nocheck
 import minus from "@/assets/minus.png";
 import SkillIcon from "@/components/Skill/SkillIcon.vue";
 import {inject, PropType} from "vue";

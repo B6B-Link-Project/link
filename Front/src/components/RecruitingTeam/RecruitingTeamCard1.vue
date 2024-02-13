@@ -7,7 +7,10 @@ import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
 import {Builder} from "builder-pattern";
 import noImg from "@/assets/noimage.webp"
 const props = defineProps({
-  data: Object as PropType<HackathonTeamInfo1DTO>
+  data: {
+    type : Object as PropType<HackathonTeamInfo1DTO>,
+    required : true
+  }
 });
 
 

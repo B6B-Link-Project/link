@@ -125,7 +125,7 @@ const newImage = ref();
                   .skillName(skill.skillName)
                   .skillType(skill.skillType)
                   .skillImgUrl(skill.skillImageUrl)
-                  .build()" height="28px" radius="3px" style="border-bottom: 1px solid" width="28px"/>
+                  .build()" height="28px" radius="3px" width="28px"/>
             </div>
           </div>
         </div>
@@ -169,10 +169,10 @@ h2 {
 
 .skill-list-container {
   margin-bottom: 20px;
-  max-width: 250px;
+  max-width: 300px;
   flex: 1;
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 

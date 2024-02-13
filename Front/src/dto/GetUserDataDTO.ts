@@ -11,4 +11,5 @@ export interface GetUserDataDTO{
     userSkills: UserSkillDTO[];
     introduce: string;
     registered: Boolean;
+
 }

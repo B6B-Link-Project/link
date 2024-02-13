@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.*;
 import java.util.List;
 
 import com.link.back.entity.Field;
-import com.link.back.entity.SkillType;
 import com.link.back.entity.User;
 
 import lombok.Getter;
@@ -21,7 +20,7 @@ public class MemberDetailResponseDto {
 	private final String referenceUrl;
 	private final Field field;
 	private String profileOriginImageName = "";
-	private String profileImageURL = "";
+	private String userImageUrl = "";
 	private final List<SkillDto> skillSets;
 
 	public MemberDetailResponseDto(User user) {
@@ -34,7 +33,7 @@ public class MemberDetailResponseDto {
 		this.field = user.getField();
 		if(user.getUserImage() != null) {
 			this.profileOriginImageName = user.getUserImage().getUserOriginImageName();
-			this.profileImageURL = user.getUserImage().getUserImageUrl();
+			this.userImageUrl = user.getUserImage().getUserImageUrl();
 		}
 		this.skillSets = user.getUserSkills().stream()
 			.map(SkillDto::new).collect(toList());

@@ -32,7 +32,7 @@ const groupedSkills = computed(() => {
 
 <template>
   <div class="member-modal-container">
-    <img class="profile" alt="" :src="userInfo.profileImageURL">
+    <img class="profile" alt="" :src="userInfo.userImageUrl">
     <div class="member-info-container">
       <div class="member-info">
         <div class="member-name">{{ userInfo.name }}</div>

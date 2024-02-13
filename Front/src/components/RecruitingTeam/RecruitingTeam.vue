@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-
+//@ts-nocheck
 import IndexSubMenu from "@/components/Index/IndexSubMenu.vue";
 import {onMounted, ref, Ref} from "vue";
 import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
 import {TeamService} from "@/api/TeamService.ts";
 import RecruitingTeamCard1 from "@/components/RecruitingTeam/RecruitingTeamCard1.vue";
 
-const refTeam: Ref<HackathonTeamInfo1DTO | undefined> = ref();
+const refTeam: Ref<HackathonTeamInfo1DTO | undefined> = ref([]);
 const teamService = new TeamService();
 onMounted(async () => {
   refTeam.value = await teamService.getRecruitTeam();
 })
-
 </script>
 
 <template>
