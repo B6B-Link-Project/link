@@ -5,7 +5,7 @@ import Modal from "@/components/Modal/Modal.vue";
 import ModalTeam from "@/components/Modal/ModalTeam.vue";
 import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
 import {Builder} from "builder-pattern";
-
+import noImg from "@/assets/noimage.webp"
 const props = defineProps({
   data: Object as PropType<HackathonTeamInfo1DTO>
 });
@@ -20,6 +20,11 @@ const refModal = ref<Boolean>(false);
 const controlModal = () => {
   refModal.value = !refModal.value;
 }
+
+function handleImageError(event: any) {
+  event.target.src = noImg; // 대체 이미지로 교체
+}
+
 </script>
 
 <template>
@@ -29,7 +34,12 @@ const controlModal = () => {
   <div class="card-container" @click="controlModal">
     <div class="upper-box">
       <div class="img-container">
-        <img :src="props.data.members[0].userImageUrl" alt="팀" class="img-container">
+        <template v-if="props.data?.members[0] && props.data.members[0].userImageUrl">
+          <img :src="props.data.members[0].userImageUrl"  @error="handleImageError" alt="팀" class="img-container">
+        </template>
+        <template v-else>
+          <img :src="noImg" alt="팀" class="img-container">
+        </template>
       </div>
       <div class="right-box-container">
         <div class="hackathon-title">

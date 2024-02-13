@@ -45,7 +45,7 @@ const shortEncoding = (text: string, cut: number): string => {
     </div>
     <div class="content-container">
       <div class="name-container">
-        <div class="project-name" @click="toProjectDetail(data.projectId)">{{ shortEncoding(data?.projectName,10) }}</div>
+        <div class="project-name" @click="toProjectDetail(data.projectId)">{{ data?.projectName }}</div>
         <div class="right-box-container">
           <div class="star-container" @click="starClick(data, data?.projectId)">
             <svg v-show="!data.starred" fill="none" height="15" viewBox="0 0 16 15" width="16"
@@ -72,17 +72,24 @@ const shortEncoding = (text: string, cut: number): string => {
 
 <style scoped>
 .content-container {
-  flex: 1;
+  flex: 0 1 auto;
+  max-width: calc(100% - 120px);
+  position: relative;
 }
 .name-container {
   display: flex;
 }
 
 .project-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
   color: #303030;
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
+  width: 100%;
 }
 
 .project-content {
@@ -130,6 +137,7 @@ img {
   display: flex;
   transition: transform 0.3s ease;
   gap: 16px;
+  position: relative;
 }
 
 .project-card:hover {
