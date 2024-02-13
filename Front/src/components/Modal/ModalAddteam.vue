@@ -10,7 +10,6 @@ import {TeamService} from "@/api/TeamService.ts";
 const props = defineProps({
   hackathonId: Object as PropType<number>
 })
-console.log(props.hackathonId)
 const skills : Ref<TeamSkillAddDto[] | undefined> = ref([]);
 const teamService = new TeamService();
 onMounted( async () => {
@@ -51,7 +50,8 @@ const teamName = ref('');
 const teamDesc = ref('');
 
 const handleRegistration = () => {
-  teamService.postCreateTeam(skillSelectRef.value, teamName.value, teamDesc.value, <number>props.hackathonId)
+  teamService.postCreateTeam(skillSelectRef.value, teamName.value, teamDesc.value, <number>props.hackathonId);
+  location.href = "/hackathonDetail?id=" + props.hackathonId;
 }
 
 provide('handleSkillSelect', handleSkillSelect);
