@@ -75,7 +75,7 @@ export class TeamService {
 
     async deleteSuggestionByUser(teamId: number) : Promise<void> {
         try {
-            const response = await apiService.postData(true, `${url}/${teamId}/members/suggest`, {});
+            const response = await apiService.deleteData(true, `${url}/${teamId}/members/suggest`, {});
             if (response && response.status === httpStatusCode.NOCONTENT) {
                 return;
             }
