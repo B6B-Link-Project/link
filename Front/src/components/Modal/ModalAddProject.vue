@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 
 import {ref} from "vue";
-import {TeamService} from "@/api/TeamService.ts";
+import {ProjectService} from "@/api/ProjectService.ts";
+import {ProjectRequestDto} from "@/dto/projectDTO.ts";
+import {Builder} from "builder-pattern";
 
 const props = defineProps({
   teamId: {
@@ -10,15 +12,22 @@ const props = defineProps({
   }
 
 })
-const teamService = new TeamService();
+
+const projectRequestDto: ProjectRequestDto = Builder<ProjectRequestDto>()
+    .build();
+const projectService = new ProjectService();
+const newImage = ref();
 const projectName = ref('');
 const projectDesc = ref('');
 const projectUrl = ref('');
 
 const handleRegistration = () => {
-  // 수정해야댐
-  teamService.postCreateTeam(skillSelectRef.value, teamName.value, teamDesc.value, <number>props.hackathonId);
-  location.href = "/myPage";
+  projectRequestDto.projectName = projectName.value;
+  projectRequestDto.projectDesc = projectDesc.value;
+  projectRequestDto.projectUrl = projectUrl.value;
+
+  projectService.createProject(projectRequestDto, newImage.value.files[0]);
+  // location.href = "/myPage";
 }
 
 </script>
@@ -34,9 +43,8 @@ const handleRegistration = () => {
     <h2>GitHub Url</h2>
     <input class="input" type="text" v-model="projectUrl">
     <h2>프로필 이미지</h2>
-      <input type="file"
-             id="profile"
-             accept="image/png, image/jpeg">
+      <input type="file" ref="newImage"
+             id="profile">
     <div class="button" @click="handleRegistration">등록하기</div>
   </div>
 </template>
