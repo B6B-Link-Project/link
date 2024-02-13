@@ -1,6 +1,7 @@
 import {ApiService} from "@/api/ApiService.ts";
 import {httpStatusCode} from "@/util/httpStatus.ts";
 import store from "@/store";
+import Store from "@/store";
 import {CatchError} from "@/util/error.ts";
 import router from "@/router";
 import {SendEmailRequestDTO} from "@/dto/SendEmailRequestDTO.ts";
@@ -11,9 +12,10 @@ import {EditValidCareerDTO} from "@/dto/EditValidCareerDTO.ts";
 import {UpdateUserDTO} from "@/dto/UpdateUserDTO.ts";
 import {AddUserInfoDTO} from "@/dto/AddUserInfoDTO.ts";
 import {GetUserDataDTO} from "@/dto/GetUserDataDTO.ts";
-import Store from "@/store";
 import {RankingUserDTO} from "@/dto/rankingUserDTO.ts";
 import {SkillRequestDto} from "@/dto/tmpDTOs/skillDTO.ts";
+import {UserSkillDTO} from "@/dto/tmpDTOs/UserSkillDTO.ts";
+import {Builder} from "builder-pattern";
 
 const apiService = new ApiService();
 
@@ -249,20 +251,24 @@ class UserService {
 
     }
 
+    @CatchError
     async getUserData() :Promise<GetUserDataDTO | undefined> {
-        try {
-            const response = await apiService.getData(true, `${authUrl}/users`, );
-            if (response && response.status === httpStatusCode.OK) {
-                return response.data as Promise<GetUserDataDTO>;
-            }
-            else {
-                alert("작업중 문제가 발생했습니다.")
-                throw new Error("null Exception")
-            }
-        }
-        catch (error){
-            console.log(error)
-            alert("작업중 문제가 발생했습니다.")
+        const response = await apiService.getData(true, `${authUrl}/users`,);
+        if (response && response.status === httpStatusCode.OK) {
+            const target = response.data.userSkills;
+            const userSkillList: UserSkillDTO[] = [];
+            target.map((data: any) => {
+                userSkillList.push(Builder<UserSkillDTO>()
+                    .skillLevel(data.skillLevel)
+                    .skill(Builder<SkillRequestDto>()
+                        .skillId(data.skillId)
+                        .skillType(data.skillType)
+                        .skillName(data.skillName)
+                        .skillImageUrl(data.skillImageUrl)
+                        .build()).build())
+            })
+            response.data.userSkills = userSkillList;
+            return response.data as Promise<GetUserDataDTO>;
         }
     }
 

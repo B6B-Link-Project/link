@@ -22,7 +22,7 @@ public class RecruitTeamMemberResponseDto {
 	private final String referenceUrl;
 	private final Field field;
 	private String profileOriginImageName = "";
-	private String profileImageURL="";
+	private String userImageUrl ="";
 	private final List<SkillDto> skillSets;
 
 	public RecruitTeamMemberResponseDto(UserTeam userTeam) {
@@ -36,7 +36,7 @@ public class RecruitTeamMemberResponseDto {
 		this.field = user.getField();
 		if(user.getUserImage() != null) {
 			this.profileOriginImageName = user.getUserImage().getUserOriginImageName();
-			this.profileImageURL = user.getUserImage().getUserImageUrl();
+			this.userImageUrl = user.getUserImage().getUserImageUrl();
 		}
 		this.skillSets = user.getUserSkills().stream()
 			.map(SkillDto::new).collect(toList());

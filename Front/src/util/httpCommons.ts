@@ -23,6 +23,18 @@ function createLocalAxios(requireAuth: boolean, isFormData?: boolean): AxiosInst
     return local;
 }
 
+class TokenMissingError extends Error {
+    isAxiosError: boolean;
+    response: { status: number };
+
+    constructor(message: string, statusCode: number) {
+        super(message); // 부모 클래스의 생성자 호출
+        this.name = "TokenMissingError"; // 오류 이름 설정
+        this.isAxiosError = true; // Axios 오류 표시
+        this.response = {status: statusCode}; // 응답 상태 코드 설정
+    }
+}
+
 function authorization(axiosInstance: any) {
     const token = store.getters.getToken;
     if(token) {
@@ -33,7 +45,7 @@ function authorization(axiosInstance: any) {
         }
     }
     else {
-        throw new Error('Authorization token is missing');
+        throw new TokenMissingError('Authorization token is missing', 401);
     }
 }
 

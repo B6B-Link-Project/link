@@ -9,7 +9,7 @@ defineProps({
     type: Object as PropType<TeamFindSkillDTO[]>,
     default: Builder<TeamFindSkillDTO[]>().build()
   },
-  title: String
+  title: Object as PropType<string>
 })
 </script>
 

@@ -11,10 +11,8 @@ const userService = new UserService();
 
 const data = ref<GetUserDataDTO>();
 
-onMounted(() => {
-  userService.getUserData().then(userData => {
-    data.value = userData;
-  });
+onMounted(async () => {
+  data.value = await userService.getUserData()
 });
 
 const name = computed(() => data.value?.name);
@@ -30,7 +28,7 @@ const introduce = computed(() => data.value?.introduce);
 const referenceUrl = computed(() => data.value?.referenceUrl);
 const Image = computed(() => data.value?.UserImage);
 const career = computed(() => data.value?.career);
-const registered = computed(() => data.value?.registered);
+//const registered = computed(() => data.value?.registered);
 
 function changeToKorean(field: string): string {
   if (field === "FRONTEND") {
@@ -53,10 +51,17 @@ const groupedSkills = computed(() => {
 
   // 각 스킬을 해당하는 타입으로 그룹화합니다.
   skills.forEach(skill => {
-    if (!grouped[skill.skillType]) {
-      grouped[skill.skillType] = [];
+    const t = skill.skill;
+    if (!grouped[t.skillType]) {
+      grouped[t.skillType] = [];
     }
-    grouped[skill.skillType].push(skill);
+    grouped[t.skillType].push(
+        Builder<SkillDTO>()
+            .skillName(t.skillName)
+            .skillType(t.skillType)
+            .skillId(t.skillId)
+            .skillImgUrl(t.skillImageUrl)
+            .build());
   });
 
   // 그룹화된 스킬을 배열로 변환하여 반환합니다.
@@ -95,13 +100,7 @@ const groupedSkills = computed(() => {
       <h2>{{ skillGroup.type }}</h2>
       <div class="skill-container">
         <div class="skill-box" v-for="skill in skillGroup.skills" :key="skill.skillName">
-          <SkillIcon :skill="
-          Builder<SkillDTO>()
-          .skillId(skill.skillId)
-          .skillName(skill.skillName)
-          .skillType(skill.skillType)
-          .skillImgUrl(skill.skillImageUrl)
-          .build()" height="56px" radius="10px" width="56px"/>
+          <SkillIcon :skill="skill" height="56px" radius="10px" width="56px"/>
           <h3>{{ skill.skillName }}</h3>
         </div>
       </div>

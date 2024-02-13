@@ -101,13 +101,13 @@ watch(
 )
 
 const pageableDto = ref<PageableDto>({
-  pageNumber: undefined,
-  totalPages: undefined,
+  pageNumber: 0,
+  totalPages: 0,
 });
 
 watch(refTeamList, (newVal) => {
-  pageableDto.value.pageNumber = newVal?.number != null ? newVal?.number + 1 : undefined;
-  pageableDto.value.totalPages = newVal?.totalPages != null ? newVal?.totalPages : undefined;
+  pageableDto.value.pageNumber = newVal?.number != null ? newVal?.number + 1 : 0;
+  pageableDto.value.totalPages = newVal?.totalPages != null ? newVal?.totalPages : 0;
 });
 
 // const refDummy = ref<MemberRecruit>(dummy);

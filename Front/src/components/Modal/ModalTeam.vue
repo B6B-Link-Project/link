@@ -4,16 +4,17 @@ import ModalEffect from "@/components/Modal/ModalEffect.vue";
 import {PropType, ref} from "vue";
 import {HackathonTeamInfo1DTO} from "@/dto/tmpDTOs/HackathonTeamDTO.ts";
 import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
-import router from "@/router";
 
 const teamBuildingService = new TeamBuildingService();
 
 defineProps({
   data: {
-    type: Object as PropType<HackathonTeamInfo1DTO>
+    type: Object as PropType<HackathonTeamInfo1DTO>,
+    required: true
   },
   totalPoint: {
-    type: Number
+    type: Number,
+    required: true
   }
 })
 
@@ -35,7 +36,7 @@ const applyTeam = (num: number | undefined) => {
                :text="'남은 점수 '+ (data?.teamMaxPoint-totalPoint) + '점'"/>
   <div style="padding: 24px;">
     <div class="container">
-      <img :src="data?.members?.[0].profileImageURL" alt="" class="img">
+      <img :src="data?.members?.[0].userImageUrl" alt="" class="img">
       <div class="team-container">
         <h1>{{ data?.teamName }}</h1>
         <section>
@@ -113,6 +114,7 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1;
 }
 
 h1 {

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import {PropType} from "vue";
-import {CatchError} from "@/util/error.ts";
-
 const props = defineProps({
   data: {
     type: Object as PropType<SimpleUserDTO>,

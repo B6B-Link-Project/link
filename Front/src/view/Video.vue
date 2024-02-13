@@ -42,7 +42,7 @@ onMounted(async () => {
       <div class="video-sector">
         <VideoPlayer :reservation-id="reservationId"/>
       </div>
-      <div class="introduce-container">
+      <div class="introduce-container" v-if="memberDetailResponseDto">
         <VideoInfo :member-info="memberDetailResponseDto"/>
       </div>
     </div>

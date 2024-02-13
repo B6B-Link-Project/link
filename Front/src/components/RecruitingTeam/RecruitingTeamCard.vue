@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+//@ts-nocheck
 import {PropType, ref} from "vue";
 import SkillIcon from "@/components/Skill/SkillIcon.vue";
 import Modal from "@/components/Modal/Modal.vue";
@@ -17,7 +18,7 @@ const controlModal = () => {
 
 <template>
   <Modal v-if="refModal" @closeModal="controlModal">
-    <ModalTeam/>
+    <ModalTeam :data="null" :total-point="null"/>
   </Modal>
   <div class="card-container" @click="controlModal">
     <div class="upper-box">

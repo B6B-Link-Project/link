@@ -91,7 +91,7 @@ class ReservationManager {
           .name(memberDetailByUserId.name)
           .introduce(memberDetailByUserId.introduce)
           .rating(memberDetailByUserId.rating)
-          .profileImageURL(memberDetailByUserId.profileImageURL)
+          .userImageUrl(memberDetailByUserId.profileImageURL)
           .skillSets(memberDetailByUserId.skillSets)
           .build();
     });
@@ -155,7 +155,7 @@ watch(() => route.path, () => {
     <h3>{{ key }}</h3>
     <div class="user-card-container">
       <div style="flex: 1;">
-        <UserCard v-for="val in arr" :user-info="reservationManager.getMemberDetail(val.userId)"
+        <UserCard v-for="val in arr" :user-info="reservationManager.getMemberDetail(val.userId).value"
                   @click="reservationManager.moveToVideo(val.reservationId)"/>
       </div>
     </div>

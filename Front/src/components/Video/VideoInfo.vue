@@ -59,7 +59,7 @@ const changeToKorean = (field: string): string => {
       {{ props?.memberInfo?.introduce }}
     </div>
     <div class="skill-list-container">
-      <ModalSkill v-for="[key, value] in skillMap" :skill-info="value" :title="key" font-size="18px"
+      <ModalSkill v-for="[key, value] in skillMap" :skill-info="value" :title="key.toString()" font-size="18px"
                   font-weight="500" margin-bottom="10px"/>
     </div>
     <div class="button">
