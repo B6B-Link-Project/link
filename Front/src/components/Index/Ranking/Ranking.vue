@@ -17,6 +17,7 @@ const rankers = ref<RankingUserDTO[]>([]);
 
 onMounted(async () => {
   rankers.value = await getRanking.value;
+  console.log(rankers.value);
 });
 
 </script>
@@ -25,7 +26,7 @@ onMounted(async () => {
   <IndexSubMenu style="margin-top: 48px; margin-bottom: 22px" title="이달의 랭킹"/>
   <div class="ranking-container">
     <div v-for="user in rankers" class="ranking-card">
-      <img :src="user.userImgUrl" alt="">
+      <img :src="user.userImageUrl" alt="">
       <div class="member-info-text">
         <div class="info-text">
           {{ user.name }}

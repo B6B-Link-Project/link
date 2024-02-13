@@ -385,9 +385,6 @@ public class UserService {
 		}
 		user.addUserInfo(userImage, newSkills, additionalUserInfoRequest);
 		userRepository.save(user);
-
-		System.out.println(user.getEmail());
-		System.out.println(user.getCareer());
 	}
 
 	//user 정보 수정

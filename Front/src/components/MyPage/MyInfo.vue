@@ -74,7 +74,7 @@ const groupedSkills = computed(() => {
     <RouterLink to="/editInfo" class="remove-button">수정</RouterLink>
   </div>
   <div class="profile">
-    <img alt="" src="https://thumb.mtstarnews.com/06/2023/06/2023060322064338985_2.jpg/dims/optimize" class="img">
+    <img alt="" :src="Image?.userImageUrl" class="img">
     <div class="text-container">
       <div class="info-text">
         {{name}}
