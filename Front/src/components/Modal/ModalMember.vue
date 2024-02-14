@@ -53,9 +53,11 @@ const groupedSkills = computed(() => {
       </div>
       <div class="button-wrapper">
         <div class="button-container">
-          <a :href="userInfo.referenceUrl" target="_blank" class="git-button">
-            <ModalGithubButton/>
-          </a>
+          <template v-if="userInfo.referenceUrl">
+            <a :href="userInfo.referenceUrl" target="_blank" class="git-button">
+              <ModalGithubButton/>
+            </a>
+          </template>
           <div class="button-right-container">
             <template v-if="buttonIsValid">
               <slot/>

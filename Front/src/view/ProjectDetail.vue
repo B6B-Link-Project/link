@@ -35,7 +35,8 @@ const teamRefs: TeamRefs = {
 const issueCount: Ref<IssueCountResponseDTO | undefined> = ref();
 
 onMounted(async () => {
-  issueCount.value = await projectService.getIssueCount(parseInt(<string>route.params.id))
+  issueCount.value = await projectService.getIssueCount(parseInt(<string>route.params.id));
+  isMyProject.value = await projectService.getIsMyProject(parseInt(<string>route.params.id));
 })
 
 const initTeamRefs = async (teamId: number) => {
@@ -115,41 +116,44 @@ const newImage = ref();
         </div>
       </template>
       <ProjectLink :project-detail="projectDetail" :update-project="updateProject" :editable="isLeader"/>
-      <h1 class="redmineTitle">레드마인</h1>
-      <div class="table">
-        <ul>
-          <li>할일</li>
-          <li>진행중</li>
-          <li>완료</li>
-        </ul>
-        <ul>
-          <li>
-            <template v-if="issueCount?.issueCount['할 일']">
-              {{issueCount?.issueCount['할 일']}}
-            </template>
-            <template v-else>
-              0
-            </template>
-          </li>
-          <li>
-            <template v-if="issueCount?.issueCount['진행중']">
-              {{issueCount?.issueCount['진행중']}}
-            </template>
-            <template v-else>
-              0
-            </template>
-          </li>
-          <li>
-            <template v-if="issueCount?.issueCount['완료']">
-              {{issueCount?.issueCount['완료']}}
-            </template>
-            <template v-else>
-              0
-            </template>
-          </li>
-        </ul>
-      </div>
-      <a :href="`http://localhost:9090/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈 관리하기</a>
+      <template v-if="isMyProject">
+        <h1 class="redmineTitle">레드마인</h1>
+        <div class="table">
+          <ul>
+            <li>할일</li>
+            <li>진행중</li>
+            <li>완료</li>
+          </ul>
+          <ul>
+            <li>
+              <template v-if="issueCount?.issueCount['할 일']">
+                {{ issueCount?.issueCount['할 일'] }}
+              </template>
+              <template v-else>
+                0
+              </template>
+            </li>
+            <li>
+              <template v-if="issueCount?.issueCount['진행중']">
+                {{ issueCount?.issueCount['진행중'] }}
+              </template>
+              <template v-else>
+                0
+              </template>
+            </li>
+            <li>
+              <template v-if="issueCount?.issueCount['완료']">
+                {{ issueCount?.issueCount['완료'] }}
+              </template>
+              <template v-else>
+                0
+              </template>
+            </li>
+          </ul>
+        </div>
+        <a :href="`http://localhost:9090/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈
+          관리하기</a>
+      </template>
     </div>
     <project-center :project-detail="projectDetail" :editable="isLeader"/>
     <div class="side-container">
@@ -262,17 +266,21 @@ input {
   border: 1px solid #b2b2b2;
   border-radius: 10px;
 }
+
 .table ul {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #b2b2b2;
 }
+
 .table ul:first-child li {
   font-weight: 700;
 }
+
 .table ul:last-child {
   border-bottom: none;
 }
+
 .table ul li {
   list-style: none;
   width: calc(100% / 3);
@@ -280,6 +288,7 @@ input {
   padding: 10px;
   border-right: 1px solid #b2b2b2;
 }
+
 .table ul li:last-child {
   border-right: none;
 }

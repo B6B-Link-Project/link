@@ -38,13 +38,25 @@ class TeamBuildingService {
     }
 
     @CatchError
-    async getAppliedTeam(): Promise<AppliedTeamDTO | undefined> {
-        return (await apiService.getData(true, `${url}/teams/applying`)).data as AppliedTeamDTO;
+    async getAppliedTeam(teamId?: number): Promise<AppliedTeamDTO | undefined> {
+        let response;
+        if(teamId) {
+            response = await apiService.getData(true, `${url}/teams/applying?teamId=${teamId}`)
+        } else {
+            response = await apiService.getData(true, `${url}/teams/applying`)
+        }
+        return response.data as AppliedTeamDTO;
     }
 
     @CatchError
     async getSuggestedTeam(teamId: number): Promise<AppliedTeamDTO | undefined> {
-        return (await apiService.getData(true, `${url}/teams/suggested?teamId=${teamId}`)).data as AppliedTeamDTO;
+        let response;
+        if(teamId) {
+            response = await apiService.getData(true, `${url}/teams/suggested?teamId=${teamId}`)
+        } else {
+            response = await apiService.getData(true, `${url}/teams/suggested`)
+        }
+        return response.data as AppliedTeamDTO;
     }
 
     @CatchError
