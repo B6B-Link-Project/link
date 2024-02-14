@@ -6,7 +6,7 @@ import DropDownBox2 from "@/components/DropDownBox2.vue";
 import DropDownBox3 from "@/components/DropDownBox3.vue";
 
 const tierSelect = (
-  ["티어", "브론즈", "실버", "골드", "다이아"]
+  ["티어", "브론즈", "실버", "골드", "플래티넘", "다이아"]
 );
 
 const careerSelect = (
