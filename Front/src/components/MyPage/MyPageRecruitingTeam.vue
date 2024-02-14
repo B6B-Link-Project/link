@@ -75,7 +75,9 @@ const modalController = () => {
 
 <template>
   <Modal v-if="modalRef" @closeModal="modalController">
-    <ModalAddProject :teamId="refTeam?.teamId"/>
+    <template v-if="refTeam?.teamId">
+      <ModalAddProject :teamId="refTeam.teamId"/>
+    </template>
   </Modal>
   <div class="recruiting-container">
     <h1>모집중인 팀</h1>
