@@ -29,4 +29,15 @@ export class LighthouseService {
     async updateLighthouseReport(projectId: number) {
         await apiService.postData(true, `${url}/report/${projectId}`, '');
     }
+
+    @CatchError
+    async getProjectUri(projectId: number, isPlane?: boolean): Promise<string[]> {
+        return (await apiService.getData(false, `${url}/uri/${projectId}`, isPlane ? {params: {isPlane}} : {})).data as string[];
+    }
+
+    @CatchError
+    async updateProjectUri(projectId: number, uris: string[]) {
+        await apiService.putData(true, `${url}/uri/${projectId}`, uris);
+    }
+
 }

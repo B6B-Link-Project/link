@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.link.back.dto.response.LighthouseResponseDTO;
@@ -34,9 +36,22 @@ public class LightHouseController {
 		return ResponseEntity.ok(lighthouseService.getReportList(projectId));
 	}
 
+	@GetMapping("/uri/{projectId}")
+	public ResponseEntity<List<String>> getUriList(@PathVariable Long projectId, @RequestParam(defaultValue = "false") Boolean isPlane) {
+		List<String> uris = lighthouseService.getUrlUrlList(projectId, isPlane);
+		return ResponseEntity.ok().body(uris);
+	}
+
 	@PostMapping("/uri/{projectId}")
 	public ResponseEntity<Void> updateUri(@PathVariable Long projectId, @RequestBody List<String> uriList) {
 		lighthouseService.saveUri(projectId, uriList);
 		return ResponseEntity.ok().build();
 	}
+
+	@PutMapping("/uri/{projectId}")
+	public ResponseEntity<Void> replaceUri(@PathVariable Long projectId, @RequestBody List<String> uriList) {
+		lighthouseService.replaceUri(projectId, uriList);
+		return ResponseEntity.ok().build();
+	}
+
 }

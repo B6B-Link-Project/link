@@ -1,6 +1,9 @@
 package com.link.back.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,17 @@ public class LighthouseService {
 			.toList();
 	}
 
+	public List<String> getUrlUrlList(Long projectId, Boolean isPlane) {
+		if (isPlane != null && isPlane.equals(Boolean.TRUE)){
+			List<LighthouseUri> data = getUriList(projectId);
+			return data.stream()
+				.map(LighthouseUri::getUri)
+				.toList();
+		} else {
+			return getUrlUrlList(projectId);
+		}
+	}
+
 	public List<LighthouseResponseDTO> getReportList(Long projectId) {
 		return lightHouseReportRepository.getAllByProject_ProjectId(projectId)
 			.stream()
@@ -55,6 +69,21 @@ public class LighthouseService {
 			LighthouseUri.builder()
 				.project(Project.builder().projectId(projectId).build())
 				.uri(data).build())
+			.toList();
+		lightHouseUriRepository.saveAll(lighthouseUriList);
+	}
+
+	@Transactional
+	public void replaceUri(Long projectId, List<String> newUris) {
+		List<LighthouseUri> uris = lightHouseUriRepository.findByProject_ProjectId(projectId);
+		lightHouseUriRepository.deleteAll(uris);
+
+		Set<String> newUriSet = new HashSet<>(newUris);
+
+		List<LighthouseUri> lighthouseUriList = newUriSet.stream().map((data) ->
+				LighthouseUri.builder()
+					.project(Project.builder().projectId(projectId).build())
+					.uri(data).build())
 			.toList();
 		lightHouseUriRepository.saveAll(lighthouseUriList);
 	}

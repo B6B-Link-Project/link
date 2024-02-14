@@ -25,6 +25,8 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['handleProjectUrl']);
+
 const editList: EditLink[] = reactive([]);
 
 watch(
@@ -41,7 +43,7 @@ watch(
       editList.push(
           Builder<EditLink>()
               .url(ref(props.projectDetail?.deployUrl))
-              .text("프로젝트 링크")
+              .text("프로젝트 배포 링크")
               .isEditing(false)
               .key("deployUrl")
               .build()
@@ -64,6 +66,11 @@ watch(
 //   editRef.push(temp);
 // }
 const editStart = (e: EditLink) => {
+  console.log(e.key);
+  if (e.key == 'deployUrl') {
+    emit('handleProjectUrl');
+    return;
+  }
   if (e.isEditing) {
     props.updateProject(e.key, e.url);
   }

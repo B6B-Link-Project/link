@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, Ref, ref, watch} from "vue";
+import {onMounted, reactive, Ref, ref, watch} from "vue";
 import UserCard from "@/components/User/UserCard.vue";
 import {ScheduleService} from "@/api/ScheduleService.ts";
 import {useRoute} from "vue-router";
@@ -82,18 +82,17 @@ class ReservationManager {
     return map;
   }
 
-  getMemberDetail(userId: number): Ref<TeamMemberFindUserDTO> {
-    const memberRef = ref<TeamMemberFindUserDTO>(Builder<TeamMemberFindUserDTO>().build());
+  getMemberDetail(userId: number) {
+    const memberRef = reactive<TeamMemberFindUserDTO>(Builder<TeamMemberFindUserDTO>().build());
     this.teamBuildingService.getMemberDetailByUserId(userId).then((memberDetailByUserId) => {
-      memberRef.value = Builder<TeamMemberFindUserDTO>()
-          .career(memberDetailByUserId.career)
-          .field(memberDetailByUserId.field)
-          .name(memberDetailByUserId.name)
-          .introduce(memberDetailByUserId.introduce)
-          .rating(memberDetailByUserId.rating)
-          .userImageUrl(memberDetailByUserId.profileImageURL)
-          .skillSets(memberDetailByUserId.skillSets)
-          .build();
+      console.log(memberDetailByUserId);
+          memberRef.career =  memberDetailByUserId.career;
+          memberRef.field =  memberDetailByUserId.field;
+          memberRef.name = memberDetailByUserId.name;
+          memberRef.introduce = memberDetailByUserId.introduce;
+          memberRef.rating = memberDetailByUserId.rating;
+          memberRef.userImageUrl = memberDetailByUserId.userImageUrl;
+          memberRef.skillSets = memberDetailByUserId.skillSets;
     });
     return memberRef;
   }
@@ -113,6 +112,11 @@ class ReservationManager {
 
 const reservationManager = new ReservationManager();
 const scheduleManager = new ScheduleManager();
+
+const handleEditSchedule = () => {
+  scheduleManager.updateMySchedule(selectedTime.value);
+  alert('수정되었습니다.');
+}
 
 onMounted(() => {
   scheduleManager.initScheduleSet(selectedTime.value);
@@ -138,7 +142,7 @@ watch(() => route.path, () => {
       <div :class="!isPm?'select':'non-select'" @click="clicked(false)">오전</div>
       <div :class="isPm?'select':'non-select'" @click="clicked(true)">오후</div>
     </div>
-    <div class="edit" @click="scheduleManager.updateMySchedule(selectedTime)">수정하기</div>
+    <div class="edit" @click="handleEditSchedule">수정하기</div>
   </div>
   <div v-if="!isPm" class="time-container">
     <div class="time-button" v-for="i in 12" @click="selectTime(i-1)" :class="selectedTime.has(i-1)?
@@ -155,7 +159,7 @@ watch(() => route.path, () => {
     <h3>{{ key }}</h3>
     <div class="user-card-container">
       <div style="flex: 1;">
-        <UserCard v-for="val in arr" :user-info="reservationManager.getMemberDetail(val.userId).value"
+        <UserCard v-for="val in arr" :user-info="reservationManager.getMemberDetail(val.userId)"
                   @click="reservationManager.moveToVideo(val.reservationId)"/>
       </div>
     </div>
