@@ -151,7 +151,9 @@ const newImage = ref();
             </li>
           </ul>
         </div>
-        <a :href="`http://localhost:9090/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈
+<!--        <a :href="`http://localhost:9090/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈-->
+<!--          관리하기</a>-->
+        <a :href="`http://i10a602.p.ssafy.io:3000/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈
           관리하기</a>
       </template>
     </div>

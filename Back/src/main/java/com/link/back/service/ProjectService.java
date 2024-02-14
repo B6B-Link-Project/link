@@ -305,4 +305,12 @@ public class ProjectService {
 		}
 		return false;
 	}
+
+	public boolean isMyProject(Long projectId, Long userId) {
+		return projectRepository.findById(projectId)
+			.map(project -> project.getTeam().getUserTeamList().stream()
+				.anyMatch(userTeam -> userTeam.getUser().getUserId().equals(userId)
+					&& userTeam.getMemberStatus() == JOINED))
+			.orElse(false);
+	}
 }
