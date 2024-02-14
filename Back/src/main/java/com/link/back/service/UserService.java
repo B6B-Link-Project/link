@@ -227,7 +227,6 @@ public class UserService {
 		String password = userPasswordResetRequest.getPassword();
 		String verificationKey = userPasswordResetRequest.getVerificationKey();
 
-		System.out.println(1);
 		if (verificationCodeRepository.findById(verificationKey).isEmpty())
 			throw new IllegalArgumentException("올바른 접근이 아닙니다.");
 

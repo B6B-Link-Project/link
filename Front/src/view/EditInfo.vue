@@ -32,7 +32,7 @@ const registered = ref<boolean>(false);
 const introduce = ref<string>('');
 const currentYear = new Date().getFullYear();// 올해 연도
 const image = Builder<UserImageDTO>()
-    .userImageId(13)
+    .userImageId(2024)
     .userImageName('user_image1.jpg')
     .userImageUrl('http://example.com/images/user_image1.jpg')
     .userOriginImageName('user_image_origin1.jpg')

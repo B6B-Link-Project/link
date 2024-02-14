@@ -237,7 +237,7 @@ const validEmail = async function () {
       <h2>이메일</h2>
       <div class="register-content-detail">
         <input v-model="email" class="input-text" type="email">
-        <input class="register-button" style="width: 94px;" type="button" value="이메일 인증" @click="validEmail">
+<!--        <input class="register-button" style="width: 94px;" type="button" value="이메일 인증" @click="validEmail">-->
       </div>
     </div>
     <div class="register-content-block">
