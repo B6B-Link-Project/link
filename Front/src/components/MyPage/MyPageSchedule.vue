@@ -98,8 +98,11 @@ class ReservationManager {
     return memberRef;
   }
 
-  moveToVideo(reservationId: number) {
-    router.push(`/video/${reservationId}`);
+  moveToVideo(reservationId: number, guestId: number) {
+    console.log(reservationId, guestId);
+    router.push({
+      path: `video/${reservationId}/${guestId}`
+    });
   }
 
   formatDate(date: Date) {
@@ -161,7 +164,7 @@ watch(() => route.path, () => {
     <div class="user-card-container">
       <div style="flex: 1;">
         <UserCard v-for="val in arr" :user-info="reservationManager.getMemberDetail(val.userId)"
-                  @click="reservationManager.moveToVideo(val.reservationId)"/>
+                  @click="reservationManager.moveToVideo(val.reservationId, val.userId)"/>
       </div>
     </div>
   </template>

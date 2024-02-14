@@ -3,34 +3,30 @@
 import VideoPlayer from "@/components/Video/VideoPlayer.vue";
 import VideoInfo from "@/components/Video/VideoInfo.vue";
 import ModalEffect from "@/components/Modal/ModalEffect.vue";
-import {onMounted, Ref, ref} from "vue";
+import {onMounted, PropType, Ref, ref} from "vue";
 import {MemberDetailResponseDto} from "@/dto/tmpDTOs/memberDTO.ts";
 import {TeamBuildingService} from "@/api/TeamBuildingService.ts";
+import router from "@/router";
 import {useRoute} from "vue-router";
 
 const route = useRoute();
 
-const props = defineProps({
-  // reservationId: {
-  //   // required: true,
-  //   default: 1, // FIXME: 테스트용 예약 아이디
-  //   type: Number
-  // },
-  guestId: {
-    // required: true,
-    default: 99, // FIXME: 테스트용 예약 아이디
-    type: Number
-  }
-});
-
-const reservationId = parseInt(route.params.id as string);
+const reservationId = route.params.rid;
+const guestId = route.params.uid;
 
 const teamBuildingService = new TeamBuildingService();
 
 const memberDetailResponseDto: Ref<MemberDetailResponseDto | undefined> = ref();
 
 onMounted(async () => {
-  memberDetailResponseDto.value = await teamBuildingService.getMemberDetailByUserId(props.guestId);
+  console.log(route.params.reservationId, route.params.guestId);
+  try{
+    if (guestId)
+      memberDetailResponseDto.value = await teamBuildingService.getMemberDetailByUserId(parseInt(guestId as string));
+  } catch (e) {
+    alert('유효하지 않은 사용자 정보입니다.');
+    await router.push('/');
+  }
 });
 
 </script>
@@ -40,7 +36,7 @@ onMounted(async () => {
     <ModalEffect text="홍길동님과의 화상 채팅"/>
     <div class="video-container">
       <div class="video-sector">
-        <VideoPlayer :reservation-id="reservationId"/>
+        <VideoPlayer v-if="reservationId" :reservation-id="reservationId"/>
       </div>
       <div class="introduce-container" v-if="memberDetailResponseDto">
         <VideoInfo :member-info="memberDetailResponseDto"/>

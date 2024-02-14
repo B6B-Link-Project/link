@@ -4,7 +4,7 @@ import ModalGithubButton from "@/components/Modal/ModalGithubButton.vue";
 import Tier from "@/components/Tier.vue";
 import ModalSkill from "@/components/Modal/ModalSkill.vue";
 import {MemberDetailResponseDto} from "@/dto/tmpDTOs/memberDTO.ts";
-import {PropType, ref, watch} from "vue";
+import {onMounted, PropType, ref, watch} from "vue";
 import {TeamFindSkillDTO} from "@/dto/tmpDTOs/teamBuildingDTO.ts";
 import {Builder} from "builder-pattern";
 
@@ -17,7 +17,7 @@ const props = defineProps({
 
 const skillMap = ref(new Map<String, TeamFindSkillDTO[]>());
 
-watch(() => props.memberInfo, () => {
+const initMemberInfo = () => {
   props?.memberInfo?.skillSets.map((s) => {
     if (!skillMap.value.has(s.skillType))
       skillMap.value.set(s.skillType, []);
@@ -28,7 +28,13 @@ watch(() => props.memberInfo, () => {
         .skillType(s.skillType)
         .build());
   })
-});
+}
+
+watch(() => props.memberInfo, initMemberInfo);
+
+onMounted(() => {
+  initMemberInfo();
+})
 
 const changeToKorean = (field: string): string => {
   if (field === "FRONTEND") {

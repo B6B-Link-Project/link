@@ -19,6 +19,7 @@ import ModalAddDeployUrl from "@/components/Modal/ModalAddDeployUrl.vue";
 import {LighthouseService} from "@/api/LighthouseService.ts";
 import {IssueCountResponseDTO} from "@/dto/tmpDTOs/IssueCountResponseDTO.ts";
 
+const {VITE_VUE_API_URL, VITE_VUE_API_LIVE_URL} = import.meta.env;
 
 interface TeamRefs {
   skillsRef: Ref<TeamSkillDto[]>
@@ -188,7 +189,9 @@ watch(() => route.path, () => init());
         </div>
 <!--        <a :href="`http://localhost:9090/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈-->
 <!--          관리하기</a>-->
-        <a :href="`http://i10a602.p.ssafy.io:3000/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈
+<!--        <a :href="`https://i10a602.p.ssafy.io/redmine/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈-->
+<!--          관리하기</a>-->
+        <a :href="`${VITE_VUE_API_LIVE_URL}/redmine/projects/redmine${route.params.id}`" target="_blank" class="issueButton">이슈
           관리하기</a>
       </template>
     </div>
