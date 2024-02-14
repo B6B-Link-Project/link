@@ -124,8 +124,8 @@ class TeamBuildingService {
         await apiService.deleteData(true, `${url}/teams/${teamId}/members`,'')
     }
 
-    async getButtonIsVaild(userId:number): Promise<Boolean> {
-        return (await apiService.getData(true, `${url}/teams/recruit/${userId}`)).data as Boolean;
+    async getButtonIsVaild(userId: Number | undefined): Promise<boolean> {
+        return (await apiService.getData(true, `${url}/teams/recruit/${userId}`)).data as boolean;
     }
 
     async getApplyButtonIsValid(teamId:number): Promise<Boolean> {

@@ -11,14 +11,15 @@ import {TeamService} from "@/api/TeamService.ts";
 import ModalAddProject from "@/components/Modal/ModalAddProject.vue";
 
 const clickedModal = ref<Number>();
-
+const isVaild = ref<Boolean>();
 const handleModalClose = (num: number) => {
   clickedModal.value = num;
 }
 const clickedModal1 = ref<Number>();
 
-const handleModalClose1 = (num: number) => {
+const handleModalClose1 = (num: number, id: number) => {
   clickedModal1.value = num;
+  canApply(id);
 }
 const clickedModal2 = ref<Number>();
 
@@ -33,6 +34,10 @@ onMounted(async () => {
   refTeam.value = await teamBuildingService.getRecruitTeam();
   isLeader.value = await teamBuildingService.getIsLeader();
 })
+
+const canApply = async (id:number) => {
+  isVaild.value = await teamBuildingService.getButtonIsVaild(id);
+}
 
 const acceptApply = (userId: number) => {
   teamBuildingService.postAcceptApply(userId, refTeam.value?.teamId)
@@ -120,13 +125,15 @@ const modalController = () => {
             <Modal v-if="clickedModal1===i+1" @closeModal="handleModalClose1">
               <ModalMember :userInfo="data">
                 <template v-if="isLeader">
-                  <ModalButton button-text="면접 예약"/>
-                  <ModalButton button-text="수락" @click="acceptApply(data.userId)"/>
+                  <template v-if="isVaild">
+                    <ModalButton button-text="면접 예약"/>
+                    <ModalButton button-text="수락" @click="acceptApply(data.userId)"/>
+                  </template>
                   <ModalButton button-text="거절" @click="refuseApply(data.userId)"/>
                 </template>
               </ModalMember>
             </Modal>
-            <UserCard @click="handleModalClose1(i+1)" :userInfo="data" :t="true"/>
+            <UserCard @click="handleModalClose1(i+1, data.userId)" :userInfo="data" :t="true"/>
           </template>
         </template>
       </div>
