@@ -1,5 +1,7 @@
 package com.link.back.controller;
 
+import static org.springframework.http.HttpStatus.*;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +63,7 @@ public class ProjectController {
 
 		rabbitPublisher.sendMessages(project_id);
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(OK);
 	}
 
 	@GetMapping("/{project_id}/back-metrics")
@@ -70,18 +72,18 @@ public class ProjectController {
 		@RequestParam(defaultValue = "1") int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("backPerformanceId").descending());
 		return new ResponseEntity<>(backPerformanceService.getBackPerformanceResponses(project_id, pageable),
-			HttpStatus.OK);
+			OK);
 	}
 
 	@GetMapping("/{projectId}/message-count")
 	public ResponseEntity<BackPerformanceMessageResponseDto> getMessageCount(@PathVariable Long projectId){
 		BackPerformanceMessageResponseDto backPerformanceMessageResponseDto = backPerformanceService.getMessageCount(projectId);
-		return new ResponseEntity<>(backPerformanceMessageResponseDto,HttpStatus.OK);
+		return new ResponseEntity<>(backPerformanceMessageResponseDto, OK);
 	}
 	@GetMapping("/contributions/{owner}/{repo}")
 	public ResponseEntity<List<Contribution>> getContributions(@PathVariable String owner, @PathVariable String repo) {
 		List<Contribution> contributions = projectContributionService.getContributionsList(owner, repo);
-		return new ResponseEntity<>(contributions, HttpStatus.OK);
+		return new ResponseEntity<>(contributions, OK);
 	}
 
 	@GetMapping
@@ -89,7 +91,7 @@ public class ProjectController {
 		@RequestHeader(value = "Authorization", required = false) String token, Pageable pageable) {
 		Long myUserId = this.getUserIdFromToken(token);
 		Page<ProjectResponseDto> allClosedProjects = projectService.getAllClosedProjects(myUserId, pageable);
-		return new ResponseEntity<>(allClosedProjects, HttpStatus.OK);
+		return new ResponseEntity<>(allClosedProjects, OK);
 	}
 
 	@GetMapping("/my-project")
@@ -97,7 +99,7 @@ public class ProjectController {
 		@RequestHeader(value = "Authorization", required = true) String token, Pageable pageable) {
 		Long myUserId = this.getUserIdFromToken(token);
 		Page<ProjectResponseDto> myProjects = projectService.getMyProjects(myUserId, pageable);
-		return new ResponseEntity<>(myProjects, HttpStatus.OK);
+		return new ResponseEntity<>(myProjects, OK);
 	}
 
 	@GetMapping("/{project_id}")
@@ -106,14 +108,14 @@ public class ProjectController {
 		@PathVariable("project_id") Long projectId) {
 		Long myUserId = this.getUserIdFromToken(token);
 		ProjectDetailResponseDto projectDetail = projectService.getProjectDetail(myUserId, projectId);
-		return new ResponseEntity<>(projectDetail, HttpStatus.OK);
+		return new ResponseEntity<>(projectDetail, OK);
 	}
 
 	@PostMapping
 	public ResponseEntity<?> postProject(@RequestPart(value = "project") @NotNull ProjectRequestDto projectRequestDto,
 		@RequestPart(value = "image", required = false) MultipartFile image) {
 		projectService.createProject(projectRequestDto, image);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(OK);
 	}
 
 	@PostMapping("/{project_id}")
@@ -121,19 +123,19 @@ public class ProjectController {
 		@RequestPart(value = "project") @NotNull ProjectRequestDto projectRequestDto,
 		@RequestPart(value = "image", required = false) MultipartFile image) {
 		projectService.updateProject(projectId, projectRequestDto, image);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(OK);
 	}
 
 	@DeleteMapping("/{project_id}")
 	public ResponseEntity<?> deleteProject(@PathVariable("project_id") Long projectId) {
 		projectService.deleteProject(projectId);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(OK);
 	}
 
 	@PostMapping("/{project_id}/submit")
 	public ResponseEntity<?> putProjectStatus(@PathVariable("project_id") Long projectId) {
 		projectService.submitProject(projectId);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(OK);
 	}
 
 	@PostMapping("/{project_id}/like")
@@ -147,7 +149,7 @@ public class ProjectController {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		projectService.registerLike(myUserId, projectId);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(OK);
 	}
 
 	@DeleteMapping("/{project_id}/like")
@@ -160,7 +162,7 @@ public class ProjectController {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		projectService.unregisterLike(myUserId, projectId);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(OK);
 	}
 
 	@GetMapping("/like")
@@ -174,7 +176,7 @@ public class ProjectController {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		Page<ProjectResponseDto> likedProjects = projectService.getLikedProjects(myUserId, pageable);
-		return new ResponseEntity<>(likedProjects, HttpStatus.OK);
+		return new ResponseEntity<>(likedProjects, OK);
 	}
 
 	@GetMapping("/popular")
@@ -183,19 +185,19 @@ public class ProjectController {
 		@RequestHeader(value = "Authorization", required = false) String token, Pageable pageable) {
 		Long myUserId = this.getUserIdFromToken(token);
 		Page<ProjectResponseDto> likedProjects = projectService.getPopularProjects(myUserId, pageable);
-		return new ResponseEntity<>(likedProjects, HttpStatus.OK);
+		return new ResponseEntity<>(likedProjects, OK);
 	}
 
 	@GetMapping("/{project_id}/leader")
 	public ResponseEntity<Boolean> isLeader(@RequestHeader(value = "Authorization", required = false) String token,
 		@PathVariable Long project_id) {
 		if (token == null)
-			return new ResponseEntity<>(false, HttpStatus.OK);
+			return new ResponseEntity<>(false, OK);
 		try {
 			Long myUserId = this.getUserIdFromToken(token);
-			return new ResponseEntity<>(projectService.checkLeader(myUserId, project_id), HttpStatus.OK);
+			return new ResponseEntity<>(projectService.checkLeader(myUserId, project_id), OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(false, HttpStatus.OK);
+			return new ResponseEntity<>(false, OK);
 		}
 	}
 
@@ -204,4 +206,9 @@ public class ProjectController {
 		return jwtTokenProvider.getUserId(token);
 	}
 
+	@GetMapping("/redmine/{projectId}")
+	@ResponseStatus(OK)
+	public Boolean isMyProject(@PathVariable Long projectId, @RequestHeader(value = "Authorization") String token) {
+		return projectService.isMyProject(projectId, jwtTokenProvider.getUserId(token));
+	}
 }
