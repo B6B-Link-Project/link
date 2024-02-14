@@ -1,5 +1,6 @@
 package com.link.back.service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,15 +21,19 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.link.back.config.S3Uploader;
 import com.link.back.dto.GetUserBeforeInfoDTO;
+import com.link.back.dto.Image;
 import com.link.back.dto.JwtToken;
 import com.link.back.dto.LoginRequest;
 import com.link.back.dto.RankingDTO;
+import com.link.back.dto.SignupVerificationCode;
 import com.link.back.dto.UserSignUpDto;
-import com.link.back.dto.VerificationCode;
+import com.link.back.dto.PasswordVerificationCode;
 import com.link.back.dto.request.AdditionalUserInfoRequest;
 import com.link.back.dto.request.UseApiRequest;
 import com.link.back.dto.request.UserPasswordResetRequest;
@@ -36,16 +41,18 @@ import com.link.back.dto.request.UserUpdateInfoRequest;
 import com.link.back.dto.response.ApiDetailResponse;
 import com.link.back.dto.response.CareerApiResponse;
 import com.link.back.dto.response.UserInfoResponsse;
+import com.link.back.entity.ProjectImage;
 import com.link.back.entity.Skill;
 import com.link.back.entity.User;
 import com.link.back.entity.UserImage;
 import com.link.back.entity.UserSkill;
 import com.link.back.repository.RefreshTokenRepository;
+import com.link.back.repository.SignupVerificationCodeRepository;
 import com.link.back.repository.SkillRepository;
 import com.link.back.repository.UserImageRepository;
 import com.link.back.repository.UserRepository;
 import com.link.back.repository.UserSkillRepository;
-import com.link.back.repository.VerificationCodeRepository;
+import com.link.back.repository.PasswordVerificationCodeRepository;
 import com.link.back.security.JwtTokenProvider;
 
 import io.codef.api.EasyCodef;
@@ -57,7 +64,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final VerificationCodeRepository verificationCodeRepository;
+
+	private final SignupVerificationCodeRepository signVerificationCodeRepository;
+	private final PasswordVerificationCodeRepository passwordVerificationCodeRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final UserRepository userRepository;
 	private final UserImageRepository userImageRepository;
@@ -66,6 +75,7 @@ public class UserService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PasswordEncoder passwordEncoder;
 	private final JavaMailSender javaMailSender;
+	private final S3Uploader s3Uploader;
 
 	@Value("${codef.key}")
 	private String codefKey;
@@ -164,13 +174,15 @@ public class UserService {
 		});
 
 		//3. 인증번호와 이메일을 redis에 저장
-		verificationCodeRepository.save(new VerificationCode(verificationCode.toString(), email));
+		passwordVerificationCodeRepository.save(new PasswordVerificationCode(verificationCode.toString(), email));
 
 	}
 
 	//이메일 인증 - 회원가입시
 	@Transactional
-	public void sendVerificationSignUpEmail(String email) {
+	public void sendVerificationSignUpEmail(UserSignUpDto userSignUpDto) {
+
+		String email = userSignUpDto.getEmail();
 
 		//이메일에 인증번호보내기
 		//1. 인증번호 생성(6자리)
@@ -205,7 +217,7 @@ public class UserService {
 		});
 
 		//3. 인증번호와 이메일을 redis에 저장
-		verificationCodeRepository.save(new VerificationCode(verificationCode.toString(), email));
+		signVerificationCodeRepository.save(new SignupVerificationCode(verificationCode.toString(), userSignUpDto));
 
 	}
 
@@ -213,24 +225,23 @@ public class UserService {
 	//맞으면 그냥 동작 틀리면 에러
 	public void compareVerificationKey(String verificationKey, String email) {
 		//두 조건 맞으면 알아서 통과
-		if (verificationCodeRepository.findById(verificationKey).isEmpty())
+		if (signVerificationCodeRepository.findById(verificationKey).isEmpty())
 			throw new IllegalArgumentException("올바른 인증번호가 아닙니다.");
 
-		if (!email.equals(verificationCodeRepository.findById(verificationKey).get().getEmail()))
+		if (!email.equals(signVerificationCodeRepository.findById(verificationKey).get().getUserSignUpDto().getEmail()))
 			throw new IllegalArgumentException("올바른경로가 아닙니다.");
 
 	}
-
 	//비밀번호 재설정
 	public void resetPassword(UserPasswordResetRequest userPasswordResetRequest) {
 		String email = userPasswordResetRequest.getEmail();
 		String password = userPasswordResetRequest.getPassword();
 		String verificationKey = userPasswordResetRequest.getVerificationKey();
 
-		if (verificationCodeRepository.findById(verificationKey).isEmpty())
+		if (passwordVerificationCodeRepository.findById(verificationKey).isEmpty())
 			throw new IllegalArgumentException("올바른 접근이 아닙니다.");
 
-		if (!verificationCodeRepository.findById(verificationKey)
+		if (!passwordVerificationCodeRepository.findById(verificationKey)
 			.get()
 			.getEmail()
 			.equals(userRepository.findByEmail(email).get().getEmail()))
@@ -364,6 +375,7 @@ public class UserService {
 			throw new IllegalArgumentException("잘못된 정보입니다.");
 
 		UserImage userImage = additionalUserInfoRequest.getUserImage();
+
 		userImageRepository.save(userImage);
 
 		List<UserSkill> userSkills = additionalUserInfoRequest.getUserSkills();
@@ -461,10 +473,28 @@ public class UserService {
 		return new GetUserBeforeInfoDTO(user);
 	}
 
+	@Transactional
+	public Image createImage(MultipartFile image) {
+		Image img = uploadImage(image);
+
+		return img;
+	}
+
+	private Image uploadImage(MultipartFile image) {
+		Image img = null;
+		if (image != null) {
+			try {
+				img = s3Uploader.upload(image, "static");
+			} catch (IOException e) {
+				throw new RuntimeException("S3 이미지 업로드 실패"); // FIXME: 예외 클래스 필요
+			}
+		}
+		return img;
+	}
+
 	//User 정보 수정할 때 검증할 메소드
 	public boolean validUpdateInfo(UserUpdateInfoRequest userUpdateInfoRequest) {
-		// if (userUpdateInfoRequest.getPassword() == null)
-		// 	return false;
+
 		if (userUpdateInfoRequest.getName() == null)
 			return false;
 		if (userUpdateInfoRequest.getBirth() == null)

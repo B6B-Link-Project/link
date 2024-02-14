@@ -26,7 +26,7 @@ const field = computed(() => {
 
 const introduce = computed(() => data.value?.introduce);
 const referenceUrl = computed(() => data.value?.referenceUrl);
-const Image = computed(() => data.value?.UserImage);
+const Image = computed(() => data.value?.image);
 const career = computed(() => data.value?.career);
 //const registered = computed(() => data.value?.registered);
 

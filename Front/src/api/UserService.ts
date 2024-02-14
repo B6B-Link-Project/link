@@ -16,6 +16,7 @@ import {RankingUserDTO} from "@/dto/rankingUserDTO.ts";
 import {SkillRequestDto} from "@/dto/tmpDTOs/skillDTO.ts";
 import {UserSkillDTO} from "@/dto/tmpDTOs/UserSkillDTO.ts";
 import {Builder} from "builder-pattern";
+import {ImageDTO} from "@/dto/ImageDTO.ts";
 
 const apiService = new ApiService();
 
@@ -288,6 +289,16 @@ class UserService {
     async getBeforeEditInfo() :Promise<UpdateUserDTO> {
         const response = await apiService.getData(true, `${authUrl}/getUserBeforeInfo`, );
         return response.data;
+    }
+    @CatchError
+    async updateImage(image: File | null): Promise<ImageDTO>{
+        const data: FormData = new FormData();
+        data.append('image', image as any);
+
+        const response = await apiService.postMultipartData(false, `${nonAuthUrl}/image`, data);
+
+        return response.data;
+
     }
 
 }

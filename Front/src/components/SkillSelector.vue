@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-//@ts-nocheck
-import {computed, onMounted, ref, Ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import minus from "@/assets/minus.png";
 import SkillIcon from "@/components/Skill/SkillIcon.vue";
 import {Builder} from "builder-pattern";
@@ -24,30 +23,18 @@ onMounted(async () => {
   skillNames.value = skills.value.map(skill => skill.skillName);
 });
 
-const skillSelect: Set<Number> = new Set<Number>();
-const skillSelectRef: Ref<Set<Number>> = ref(skillSelect);
 const year = ref<number>(0);
-const index = ref<number>(0);
-const selectedSkillId = ref<number>(0);
 const skillSelectList = ref<UserSkillDTO[]>([]);
 const select = ref(0);
 
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
-  // Store.commit('setField', backDummy.value[select.value]);
 };
 
 const clickDropdownMenu = (item: number) => {
   select.value = item;
 };
-const handleSkillSelect = () => {
-  // 공통 db 전용
-  index.value = selectedSkillId.value - 5;
-
-  //내 db 전용
-  // index.value = selectedSkillId.value-1;
-}
 
 const removeSkill = (skillId: number) => {
   const index = skillSelectList.value.findIndex((data) => data.skill.skillId === skillId)
@@ -76,7 +63,7 @@ const addSkill = function (i: number) {
       .skillLevel(year.value)
       .build();
 
-  removeSkill(i);
+  removeSkill(i+1);
   skillSelectList.value.push(data);
   saveSkill();
 }
@@ -88,14 +75,6 @@ const saveSkill = function () {
 </script>
 
 <template>
-  <!--  <div class="detail-content-container">-->
-  <!--    <div style="width: 100%">-->
-  <!--      <div class="text-input" style="display: flex;">-->
-  <!--        <select class="" v-model="selectedSkillId" style="border: none; font-size: 16px; width: 100%" @change="handleSkillSelect">-->
-  <!--          <option v-for="skill in skills" :value="skill.skillId">{{ skill.skillName }}</option>-->
-  <!--        </select>-->
-  <!--        <input v-model="year" style="border: none; font-size: 16px; width: 20%" type="number">-->
-  <!--      </div>-->
   <div style="display: flex; gap: 16px;">
     <div class="dropdown-container" @click="toggleDropdown">
       <div class="dropdown-box">
@@ -106,7 +85,7 @@ const saveSkill = function () {
         </svg>
       </div>
       <div v-if="dropdownOpen" class="dropdown-content">
-        <div v-for="(item, index) in skillNames" :key="index" @click="clickDropdownMenu(index)">{{ item }}</div>
+        <div v-for="(item, index) in skills" :key="index" @click="clickDropdownMenu(index)">{{ item.skillName }}</div>
       </div>
     </div>
     <div class="text-input">
@@ -131,8 +110,6 @@ const saveSkill = function () {
            @click="removeSkill(skill.skill.skillId)">
     </div>
   </template>
-
-  <!--    <div @click = "saveSkill" class="button pp">선택</div>-->
 
 </template>
 

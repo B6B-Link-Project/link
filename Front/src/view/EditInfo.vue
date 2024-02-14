@@ -11,6 +11,8 @@ import Store from "@/store/index.ts";
 import {UpdateUserDTO} from "@/dto/UpdateUserDTO.ts";
 import router from "@/router";
 import store from "@/store";
+import {ImageDTO} from "@/dto/ImageDTO.ts";
+// import {ImageDTO} from "@/dto/ImageDTO.ts";
 
 const userService = new UserService();
 
@@ -31,12 +33,6 @@ const career = ref<number>(0);
 const registered = ref<boolean>(false);
 const introduce = ref<string>('');
 const currentYear = new Date().getFullYear();// 올해 연도
-const image = Builder<UserImageDTO>()
-    .userImageId(2024)
-    .userImageName('user_image1.jpg')
-    .userImageUrl('http://example.com/images/user_image1.jpg')
-    .userOriginImageName('user_image_origin1.jpg')
-    .build();
 
 const dropdownOpen = ref<boolean>(false);
 const telecom = ref<number>(0);
@@ -82,6 +78,11 @@ onMounted(async () => {
   store.commit('setField', beforeInfo.value?.field);
 });
 
+const newImage = ref();
+const imageName = ref<string>('');
+const imageUrl = ref<string>('');
+const image = ref<UserImageDTO>();
+const s3Img = ref<ImageDTO>();
 
 //경력인증 했는지 확인
 const isValid = ref<boolean>(false);
@@ -215,6 +216,18 @@ const updateUser = function () {
     alert("자기소개는 공백포함 200자 미만입니다.")
   }
 
+  image.value = Builder<UserImageDTO>()
+      .userImageName(imageName.value)
+      .userImageUrl(imageUrl.value)
+      .userOriginImageName(imageName.value)
+      .build();
+
+  if(image.value == undefined) {
+    alert("이미지를 첨부해주세요")
+    console.log("No Image")
+    return;
+  }
+
   //경력인증 확인
   const data = Builder<UpdateUserDTO>()
       // .password(pw1.value)
@@ -226,12 +239,10 @@ const updateUser = function () {
       .referenceUrl(referenceUrl.value)
       .field(field.value)
       .career(career.value)
-      .userImage(image)
+      .userImage(image.value)
       .registered(registered.value)
       .introduce(introduce.value)
       .build()
-
-  console.log(data);
 
   userService.updateUser(data);
 
@@ -239,16 +250,18 @@ const updateUser = function () {
   router.push("/")
 }
 
+const changeUserImage = async () => {
+  imageName.value = newImage.value.files[0].name;
+  s3Img.value = await userService.updateImage(newImage.value.files[0]);
+  imageUrl.value = s3Img.value?.imageUrl;
+};
+
 </script>
 
 <template>
   <ContentFit>
     <h1>회원 정보 수정</h1>
     <div class="holder">
-<!--      <h3>비밀번호</h3>-->
-<!--      <input v-model="pw1" class="text-input" type="password">-->
-<!--      <h3>비밀번호 확인</h3>-->
-<!--      <input v-model="pw2" class="text-input" type="password">-->
       <h3>이름</h3>
       <input v-model="name" class="text-input" type="text">
       <h3>생년월일</h3>
@@ -308,8 +321,9 @@ const updateUser = function () {
 
       <h3>프로필 이미지</h3>
       <div class="detail-content-container">
-        <input class="text-input" type="text">
-        <div class="button pp">파일 추가</div>
+        <input style="display: none" id="input-file" type="file" ref="newImage" accept="image/*" :multiple="false" @change="changeUserImage">
+        <input v-model="imageName" class="text-input" >
+        <label for="input-file" class="button pp">파일 추가</label>
       </div>
       <div style="text-align: left">
         <div class="detail-content-container" style="margin-bottom: 7px">

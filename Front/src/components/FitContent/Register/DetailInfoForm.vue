@@ -7,6 +7,7 @@ import Store from "@/store";
 import {Builder} from "builder-pattern";
 import {UserImageDTO} from "@/dto/UserImageDTO.ts";
 import {AddUserInfoDTO} from "@/dto/AddUserInfoDTO.ts";
+import {ImageDTO} from "@/dto/ImageDTO.ts";
 
 const userService = new UserService();
 
@@ -17,14 +18,26 @@ const field = computed(() => String(Store.state.field));
 const career = ref<number>(0);
 const registered = ref<boolean>(false);
 const introduce = ref<string>('');
-const image = Builder<UserImageDTO>()
-    .userImageId(116)
-    .userImageName('user_image1.jpg')
-    .userImageUrl('http://example.com/images/user_image1.jpg')
-    .userOriginImageName('user_image_origin1.jpg')
-    .build();
 
+const newImage = ref();
+const imageName = ref<string>('');
+const imageUrl = ref<string>('');
+const image = ref<UserImageDTO>();
+const s3Img = ref<ImageDTO>();
 const addUserInfo = function () {
+
+  image.value = Builder<UserImageDTO>()
+      .userImageName(imageName.value)
+      .userImageUrl(imageUrl.value)
+      .userOriginImageName(imageName.value)
+      .build();
+
+  if(image.value == undefined) {
+    alert("이미지를 첨부해주세요")
+    console.log("No Image")
+    return;
+  }
+
   const data = Builder<AddUserInfoDTO>()
       .email(email.value)
       .userSkills(skills.value)
@@ -33,12 +46,18 @@ const addUserInfo = function () {
       .referenceUrl(referenceUrl.value)
       .introduce(introduce.value)
       .registered(registered.value)
-      .userImage(image)
+      .userImage(image.value)
       .build();
 
   userService.addUserInfo(data);
 
 }
+
+const changeUserImage = async () => {
+  imageName.value = newImage.value.files[0].name;
+  s3Img.value = await userService.updateImage(newImage.value.files[0]);
+  imageUrl.value = s3Img.value?.imageUrl;
+};
 
 </script>
 
@@ -60,8 +79,9 @@ const addUserInfo = function () {
     <div>
       <h2>프로필 이미지</h2>
       <div class="detail-content-container">
-        <input class="text-input" type="text">
-        <div class="button pp">파일 추가</div>
+        <input style="display: none" id="input-file" type="file" ref="newImage" accept="image/*" :multiple="false" @change="changeUserImage">
+        <input v-model="imageName" class="text-input" >
+        <label for="input-file" class="button pp">파일 추가</label>
       </div>
     </div>
     <div>
@@ -70,7 +90,7 @@ const addUserInfo = function () {
         <h3>등록하신 정보가 팀원 구하기 페이지에 등록됩니다.</h3>
       </div>
       <div class="detail-content-container" style="margin-bottom: 7px">
-        <input v-model="registered" name = "registered" type="radio" value="true">네 등록할래요
+        <input v-model="registered" name = "registered" type="radio" value="true">네 등록할래요.
         <input v-model="registered" name = "registered" type="radio" value="false">다음에 등록할게요.
       </div>
     </div>

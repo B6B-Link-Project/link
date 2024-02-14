@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.link.back.dto.Image;
 import com.link.back.dto.JwtToken;
 import com.link.back.dto.LoginRequest;
 import com.link.back.dto.RankingDTO;
@@ -61,6 +64,9 @@ public class UserNonAuthController {
         //이 과정에서 오류나면 잘못된 이메일이라고 오류 보내기
         // userService.sendVerificationSignUpEmail(userSignUpDto.getEmail());
 
+
+        // userService.sendVerificationSignUpEmail(userSignUpDto);
+
         //이메일 보낸거 확인
         String response = userService.signup(userSignUpDto);
 
@@ -68,13 +74,13 @@ public class UserNonAuthController {
     }
 
     //회원가입 이메일 인증 - 메일 발송
-    @PostMapping("/signup/email")
-    public ResponseEntity<String> verifyingEmail(@Valid @RequestBody SendEmailRequest SendEmailRequest){
-
-        userService.sendVerificationSignUpEmail(SendEmailRequest.email());
-
-        return new ResponseEntity<>("이메일을 발송했습니다.", HttpStatus.OK);
-    }
+    // @PostMapping("/signup/email")
+    // public ResponseEntity<String> verifyingEmail(@Valid @RequestBody SendEmailRequest SendEmailRequest){
+    //
+    //     userService.sendVerificationSignUpEmail(SendEmailRequest.email());
+    //
+    //     return new ResponseEntity<>("이메일을 발송했습니다.", HttpStatus.OK);
+    // }
 
     //회원가입 이메일 인증 - 확인
     @GetMapping("/signup/email/verification")
@@ -243,7 +249,6 @@ public class UserNonAuthController {
     @PostMapping("/addtionalinfo")
     public ResponseEntity<String> addInfo(@Valid @RequestBody AdditionalUserInfoRequest additionalUserInfoRequest){
 
-        System.out.println(additionalUserInfoRequest.toString());
         userService.updateAdditionalInfo(additionalUserInfoRequest);
 
         return new ResponseEntity<>("추가정보입력이 완료되었습니다.", HttpStatus.OK);
@@ -256,5 +261,15 @@ public class UserNonAuthController {
         List<Skill> skills = userService.getSkillList();
 
         return new ResponseEntity<List<Skill>>(skills, HttpStatus.OK);
+    }
+
+    @PostMapping("/image")
+    public ResponseEntity<Image> transformImage(@RequestPart(value = "image", required = false) MultipartFile image){
+
+        Image img = null;
+
+        img = userService.createImage(image);
+
+        return new ResponseEntity<>(img, HttpStatus.CREATED);
     }
 }
