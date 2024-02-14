@@ -33,7 +33,6 @@ const teamRefs: TeamRefs = {
   skillsMapRef: ref(new Map<SkillType, TeamSkillDto[]>()),
 }
 const issueCount: Ref<IssueCountResponseDTO | undefined> = ref();
-const isMyProject: Ref<Boolean | undefined> = ref();
 
 onMounted(async () => {
   issueCount.value = await projectService.getIssueCount(parseInt(<string>route.params.id))

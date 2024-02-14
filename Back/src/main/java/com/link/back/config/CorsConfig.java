@@ -15,6 +15,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://localhost:4173");
         config.addAllowedOrigin("http://localhost");
+        config.addAllowedOrigin("https://i10a602.p.ssafy.io");
         config.addAllowedHeader("*"); // header
         config.addAllowedMethod("*"); // method
         config.setAllowCredentials(true);
