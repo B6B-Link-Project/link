@@ -78,7 +78,6 @@ public class Oauth2Controller {
 			new HttpEntity<>(headers),
 			GithubProfile.class);
 
-		System.out.println(infoResponse.getBody().getName());
 		//아래서 값 할당
 		long userId = 0;
 

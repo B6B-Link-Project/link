@@ -269,7 +269,7 @@ class UserService {
                         .build()).build())
             })
             response.data.userSkills = userSkillList;
-            return response.data as GetUserDataDTO;
+            return response.data as Promise<GetUserDataDTO>;
         }
     }
 

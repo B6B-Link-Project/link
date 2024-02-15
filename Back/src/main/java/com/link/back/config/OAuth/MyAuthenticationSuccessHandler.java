@@ -54,7 +54,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 			JwtToken token = jwtTokenProvider.generateToken(userId);
 
 			//로그인 성공페이지 url 확인해서 받아야함
-			String targetUrl = UriComponentsBuilder.fromUriString("https://i10a602.p.ssafy.io/refresh")
+			String targetUrl = UriComponentsBuilder.fromUriString("refresh")
 				.build()
 				//이 부분은 더 확인해봐야함
 				.encode(StandardCharsets.UTF_8)
