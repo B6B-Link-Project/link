@@ -37,7 +37,7 @@ class UserService {
 
         try {
             // 추출한 URL로 리다이렉트 수행
-            window.location.href = "http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:8080/login/oauth2/code/google"
+            window.location.href = "https://i10a602.p.ssafy.io/login/oauth2/authorization/google?redirect_uri=https://i10a602.p.ssafy.io/login/oauth2/code/google"
 
         } catch (error) {
             console.error('Error during Google login:', error);
@@ -49,7 +49,7 @@ class UserService {
 
         try {
             // 추출한 URL로 리다이렉트 수행
-            window.location.href = "https://github.com/login/oauth/authorize/?client_id=131870e79c867e5ae6d5&redirect_uri=http://localhost:8080/oauth2/github"
+            window.location.href = "https://github.com/login/oauth/authorize/?client_id=131870e79c867e5ae6d5&redirect_uri=https://i10a602.p.ssafy.io/oauth2/github"
 
         } catch (error) {
             console.error('Error during Google login:', error);
@@ -269,7 +269,7 @@ class UserService {
                         .build()).build())
             })
             response.data.userSkills = userSkillList;
-            return response.data as Promise<GetUserDataDTO>;
+            return response.data as GetUserDataDTO;
         }
     }
 
