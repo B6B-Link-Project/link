@@ -280,7 +280,7 @@ public class UserService {
 		EasyCodef codef = new EasyCodef();
 		codef.setPublicKey(codefKey);
 		codef.setClientInfoForDemo(codefId, codefSecret);
-		
+
 		HashMap<String, Object> parameterMap = new HashMap<String, Object>();
 
 		parameterMap.put("organization", "0002"); //기관코드 002 고정

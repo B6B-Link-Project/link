@@ -98,7 +98,7 @@ public class Oauth2Controller {
 			//회원가입 페이지로 보내기
 			else {
 				//여기서 리다이렉트 시켜버리자
-				String registerUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/register")
+				String registerUrl = UriComponentsBuilder.fromUriString("https://i10a602.p.ssafy.io/register")
 					.queryParam("name", name)
 					.build()
 					//이 부분은 더 확인해봐야함

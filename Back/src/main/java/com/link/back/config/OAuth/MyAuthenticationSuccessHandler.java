@@ -54,7 +54,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 			JwtToken token = jwtTokenProvider.generateToken(userId);
 
 			//로그인 성공페이지 url 확인해서 받아야함
-			String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/refresh")
+			String targetUrl = UriComponentsBuilder.fromUriString("https://i10a602.p.ssafy.io/refresh")
 				.build()
 				//이 부분은 더 확인해봐야함
 				.encode(StandardCharsets.UTF_8)
@@ -75,7 +75,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 			getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
 		} else { //존재하지 않는 user인 경우
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/register")
+            String targetUrl = UriComponentsBuilder.fromUriString("https://i10a602.p.ssafy.io/register")
 				.queryParam("email", email)
 				.build()
                 //이 부분은 더 확인해봐야함
