@@ -119,7 +119,10 @@ public class TeamBuildingService {
 	}
 
 	public void leaveTeamMember(Long teamId, Long userId) {
-		userTeamRepository.deleteUserTeamByTeamIdAndUserId(teamId, userId);
+		User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
+		Team team = teamRepository.findById(teamId).orElseThrow(RuntimeException::new);
+		userTeamRepository.deleteUserTeamByTeamAndUser(team, user);
+		team.removeMember();
 	}
 
 	public void createTeam(CreateTeamRequestDto createTeamRequestDto, Long hackathonId, Long userId) {
@@ -227,29 +230,38 @@ public class TeamBuildingService {
 	}
 
 	public Boolean findButtonIsValid(Long userId, Long id) {
-		Long teamId = userTeamRepository.findUserTeamsByUserId(id).stream()
-			.filter(userTeam -> userTeam.getMemberStatus() == JOINED)
-			.map(userTeam -> userTeam.getTeam().getTeamId())
-			.findFirst()
-			.orElse(0L);
+		Long teamId = 0L;
+		for (UserTeam userTeam : userTeamRepository.findUserTeamsByUserId(id)) {
+			if (userTeam.getMemberStatus() == JOINED) {
+				teamId = userTeam.getTeam().getTeamId();
+				break;
+			}
+		}
 		if (teamId == 0L) {
 			return false;
 		}
+
 		Team team = teamRepository.findById(teamId).orElseThrow(RuntimeException::new);
 		User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
 		Hackathon hackathon = team.getHackathon();
-		int nowPoint = team.getUserTeamList().stream()
-			.filter(userTeam -> userTeam.getMemberStatus() == JOINED)
-			.mapToInt(userTeam -> userTeam.getUser().getRating() / 50 + 1)
-			.sum();
+
+		int nowPoint = 0;
+		for (UserTeam userTeam : team.getUserTeamList()) {
+			if (userTeam.getMemberStatus() == JOINED) {
+				nowPoint += userTeam.getUser().getRating() / 50 + 1;
+			}
+		}
+
 		if (team.getTeamStatus() == COMPLETE || team.getTeamMember().equals(hackathon.getMaxTeamMember()) ||
 			user.getRating() / 50 + 1 > hackathon.getMaxPoint() - nowPoint) {
 			return false;
 		}
-		// return userTeamRepository.findUserTeamsByUserId(userId).stream()
-		// 	.noneMatch(userTeam -> userTeam.getUser().getJoinStatus() || userTeam.getTeam()
-		// 		.getTeamId()
-		// 		.equals(team.getTeamId()));
+
+		// for (UserTeam userTeam : userTeamRepository.findUserTeamsByUserId(userId)) {
+		// 	if (userTeam.getUser().getJoinStatus() || userTeam.getTeam().getTeamId().equals(team.getTeamId())) {
+		// 		return false;
+		// 	}
+		// }
 		return true;
 	}
 
