@@ -120,7 +120,7 @@ public class UserNonAuthController {
                 .maxAge(refreshTokenExpireTime)
                 .httpOnly(true)
 //                .sameSite("None") // SameSite 속성을 제3자 쿠키에 대해 None으로 설정
-//                .secure(true) // 필수로 같이 설정해줘야함
+                .secure(true) // 필수로 같이 설정해줘야함
                 .path("/")
                 .build();
 
