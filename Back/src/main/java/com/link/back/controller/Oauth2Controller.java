@@ -117,7 +117,7 @@ public class Oauth2Controller {
 			Optional<User> userOptional = userRepository.findByEmail(email);
 
 			if (userOptional.isEmpty()) {
-				String registerUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/register")
+				String registerUrl = UriComponentsBuilder.fromUriString("https://i10a602.p.ssafy.io/register")
 					.queryParam("email", email)
 					.build()
 					//이 부분은 더 확인해봐야함
@@ -149,7 +149,7 @@ public class Oauth2Controller {
 		//리프레시 토큰 레디스에 저장 -> 비교목적
 		refreshTokenRepository.save(new RefreshToken(token.getRefreshToken()));
 
-		String targetURL = UriComponentsBuilder.fromUriString("http://localhost:5173/refresh")
+		String targetURL = UriComponentsBuilder.fromUriString("http://i10a602.p.ssafy.io/refresh")
 			.build()
 			//이 부분은 더 확인해봐야함
 			.encode(StandardCharsets.UTF_8)
