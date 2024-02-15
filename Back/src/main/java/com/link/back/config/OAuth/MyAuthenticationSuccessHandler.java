@@ -62,6 +62,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
 			ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", token.getRefreshToken())
 				.maxAge(refreshTokenExpireTime)
+				.secure(true)
 				.httpOnly(true)
 				.path("/")
 				.build();
